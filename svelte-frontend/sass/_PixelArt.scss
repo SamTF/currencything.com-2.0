@@ -1,0 +1,6 @@
+// Pixel perfect rendering for pixel art images
+
+.pixel-art {
+    image-rendering: pixelated;                     // pixel-perfect nearest neighbour scaling
+    image-rendering: optimizeSpeed;                 // same as above, but for firefox
+}

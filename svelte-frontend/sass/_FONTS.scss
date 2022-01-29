@@ -1,0 +1,9 @@
+// This file holds all the font info
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+// CONSTANTS
+// default font is Comic Sans - or Quicksand if there's no CS - or system fonts as a backup.
+$font-family: 'Comic Sans MS', 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, sans-serif;
+$font-size: 2.2vh;
+$h1-size: 6vh;

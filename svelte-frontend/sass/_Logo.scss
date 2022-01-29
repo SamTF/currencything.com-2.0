@@ -1,0 +1,41 @@
+// The Clown Logo in the top left of all pages
+
+.logo {
+    // Top-Left always
+    position: fixed;
+    top: 2vmin;
+    left: 2vmin;
+
+    // Size
+    height: 8vh;
+
+    // Shadow
+    filter: drop-shadow(0px 10px 30px black);
+
+    // Outline test
+    border-radius: 100%;
+
+    // Animation
+    transition: all 100ms;
+    
+
+    // Mouse over
+    &:hover {
+        outline: white dashed 3px;
+        outline-offset: 6px;
+    }
+
+    // Clicking
+    &:active {
+        // More outline offset and thicker outline
+        outline-offset: 12px;
+        outline-width: 4px;
+        outline-color: $accent-colour;
+
+        // Bigger icon
+        height: 9vh;
+
+        // Instant transition
+        transition: all 0ms
+    }
+}

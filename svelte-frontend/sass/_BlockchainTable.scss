@@ -1,0 +1,83 @@
+// Styles the table element containing the blockchain data
+
+// Variables
+$table-bg: rgba(255, 255, 255, 0.7);    // the background colour for the table body
+$table-bg-blur: 3px;
+$table-row-seperator: #ee333325;        // the colour of the line seperating each row
+
+// Centering the table
+.table-container {
+    display: grid;
+    place-items: center;
+}
+
+// THE MAIN TABLE!
+.blockchain-table {
+    // Width
+    width: 50vw;
+
+    // Margin
+    margin: 4vmin 0;
+
+    // Border
+    border-collapse: collapse;      // The border-collapse CSS property sets whether cells inside a <table> have shared or separate borders.
+    border-radius: 15px 15px 0 0;   // only the top-left and top-right have a round border
+    overflow: hidden;               // hides the background that goes beyond the border radius to make the radius actually do something
+
+    // Background Colours
+    background: $table-bg;
+    backdrop-filter: blur($table-bg-blur);
+
+    // Font
+    color: $table-colour;
+
+    // Shadow
+    box-shadow: 0 0 20px rgba(0, 0, 0, 1);
+
+
+    // Adding padding for the Table Headers and the Table Cells
+    th, td {
+        padding: 5px 15px;
+    }
+    
+    // Table Headers (the area at the top of the table)
+    th {
+        // Colours
+        color: $heading-colour;
+        background-color: $accent-colour;
+
+        // Font
+        text-align: left;
+        text-transform: uppercase;
+        /* font-size: 1.5rem; */
+        font-size: 2.5vmin;
+        font-weight: bold;
+
+        // Bottom padding
+        padding-bottom: 1rem;
+    }
+
+    // Table Rows
+    tr {
+        border-bottom: 2px solid $table-row-seperator;
+
+        // Giving every alternate row a subtle background colour
+        &:nth-of-type(even) {
+            // background: transparentize($color: $table-row-alt, $amount: 0.88);
+            background: change-color($color: $accent-colour, $alpha: 0.12);
+        }
+
+        // Adding a thick bottom border at the bottom row
+        &:last-of-type {
+            border-bottom: 10px solid $accent-colour;
+        }
+
+        // Brighter accent background when hovering over a row
+        &:hover {
+            background: change-color($color: $accent-colour, $alpha: 0.475);
+            color: $heading-colour;
+        }
+    }
+}
+
+

@@ -1,0 +1,1 @@
+This is a Work-In-Progress recreation of my [Currency Thing Blockchain Explorer](https://github.com/SamTF/currencything.com) in SvelteKit.

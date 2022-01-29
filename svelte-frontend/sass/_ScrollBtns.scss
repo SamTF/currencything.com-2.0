@@ -1,0 +1,14 @@
+// The up/down buttons that scrolls smoothly to the top and bottom of the web page
+
+// Main div holding both buttons
+.scroll-buttons {
+    position: fixed;
+    top: 3vmin;
+    right: 3vmin;
+
+    // The button images
+    img {
+        display: block;
+        margin-bottom: 1rem;
+    }
+}

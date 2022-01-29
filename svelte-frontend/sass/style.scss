@@ -1,0 +1,80 @@
+// This is the main SASS Stylesheet. It contains basic classes and styling that ALL pages inherit from.
+// It also imports the styles for specific components
+
+// IMPORTS
+// Variables
+@import 'FONTS';
+@import 'CURSORS';
+@import 'COLOURS';
+// Styles
+@import 'BlockchainTable';
+@import 'ScrollBtns';
+@import 'PixelArt';
+@import 'Logo';
+
+
+// Reset
+* {
+    box-sizing: border-box;
+}
+
+html {
+    // Using fun mouse cursors from Hypnospace!
+    cursor: $cursor-default;
+}
+
+// Main Stuff
+body {
+    // Background Image
+    background-image: url('/static/bg_worms_lowres.png');
+    // background-image: url('/static/images/bg_worms_lowres.webp');
+    background-position: center;
+    background-size: 150%;
+
+    // Font
+    font-family: $font-family;
+    font-size: $font-size;
+    color: $main-colour;
+}
+
+// The main layout grid that all pages use
+.page-layout {
+    display: grid;
+    grid-template-columns: 20% 1fr 20%; // 20% margin | main content | 20% margin
+    place-items: center;                // centering the content
+}
+
+
+// Headings
+h1 {
+    // Font
+    font-size: $h1-size;
+    text-align: center;
+    color: $heading-colour;
+
+    // Text Decoration
+    text-decoration: underline aquamarine;
+    // text-decoration-style: wavy;
+    text-transform: lowercase;
+    letter-spacing: 2px;
+}
+
+// Horizontal line
+hr {
+    border: 3px white solid;
+    border-radius: 5px;
+}
+
+// Links
+a {
+    text-decoration: none;      // no underline
+    color: inherit;             // keep the same colour
+
+    cursor: $cursor-pointer;    // pointer cursor!
+}
+
+// Any clickable/interactive element
+.clickable {
+    cursor: $cursor-pointer;
+}
+
