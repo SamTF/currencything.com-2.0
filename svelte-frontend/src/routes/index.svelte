@@ -30,6 +30,7 @@
 
     // Imports
     import Blockchain from '../components/Blockchain.svelte'
+    import CurrencyStats from '../components/CurrencyStats.svelte'
 
     async function fetchBlockchain() {
         const url = 'http://localhost:3000/api/blockchain/'
@@ -54,12 +55,8 @@
 
 <!-- page content -->
 <h1>currency thing blockchain explorer</h1>
-<p>now available in svelte!</p>
-
-<hr>
-
-<a href="/about">learn more about currency things</a>
-
+<a href="/about"><p style="text-align: center;">learn more about currency things</p></a>
+<CurrencyStats />
 <hr>
 
 <!-- <Blockchain table_data={$blockchain} /> -->
