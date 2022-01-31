@@ -4,3 +4,23 @@ $accent-colour: #f15050;    // the main accent colour of the website
 $heading-colour: white;     // colour of h1 titles
 $main-colour: white;        // default text colour used in most places
 $table-colour: black;       // colour of the text in the blockchain table
+
+// Other colours in the colour palette
+$bright-accent: #E52B50;
+$blue: #63a6db;
+$purple: #c4178a;
+$yellow: #ffcd36;
+$green: #5dc2a5;
+$orange: #f17950;
+$pink: #f150a1;
+
+// Saving these variables into a map (a dict basically)
+$colour-palette: ("main": $accent-colour, "accent": $bright-accent, "blue": $blue, "purple": $purple, "yellow": $yellow, "green": $green, "orange": $orange, "pink": $pink);
+
+// Generic background colour classes
+// Generating a class for each key,value in that map! WOW!! https://sass-lang.com/documentation/at-rules/control/each
+@each $name, $colour in $colour-palette {
+    .bg-#{$name} {
+        background-color: $colour !important;
+    }
+}
