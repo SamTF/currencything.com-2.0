@@ -1,0 +1,44 @@
+// Highlights milestone stransactions with a special style and additional info on hover!
+
+// Style for the row on the blockchain - must override other style
+.milestone {
+    background: rgba(218, 165, 32, 0.7) !important;
+    background: linear-gradient(to bottom right, #ffc40098, #daa520b3) !important;
+    color: $main-colour !important;
+    position: relative !important;
+}
+
+// Style for the tooltip over the row when hovering
+.milestone::after {
+    // the text content to display
+    // Example content: "🏆 Achievement! 🎇 The 1000th Currency Thing! 🥳🎉"
+    content: "🏆 Achievement! 🎇 The " attr(data-milestone) "th Currency Thing! 🥳🎉"; // concatenating strings in CSS!
+
+    // position above the row
+    position: absolute;
+    left: 0;    // having both left and right makes the box take up the entire width of the element
+    right: 0;
+    bottom: 0;  // starting at 0 then animates to 100% for an "unfolding" effect
+
+    // Box design
+    background-image: url('/static/bg_worms_lowres.png');
+    background-size: 250%;
+    padding: 1em;
+    border-radius: 20px 20px 0px 0px;
+
+    // Text
+    font-size: $font-size;
+    text-align: center;
+
+    // Animation - unfolding from the bottom
+    transform: scale(1, 0) rotateZ(360deg);
+    // transition: transform ease-out 150ms, bottom ease-out 150ms;
+    transition: all ease-out 150ms;
+    // perspective: 1000;
+}
+
+// Show tooltip when hovering over it
+.milestone:hover::after {
+    transform: scale(1, 1) rotateZ(360deg);
+    bottom: 100%;
+}
