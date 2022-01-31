@@ -1,0 +1,61 @@
+// The Info cards containing specific statistics about the Blockchain and the users
+// Contain a text field and can expanded/contract to show/hide a graph
+
+// Container for all the Stat Card
+.currency-stats {
+    // grid layout
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(20vw, 1fr));
+}
+
+// Container for each individual Card
+.stat-panel {
+    transition: all 200ms;
+}
+
+// The Stat Card component itself
+.stat-card {
+    // Grid display
+    display: grid;
+    place-items: center;
+
+    // Colour & Design
+    background-color: #E52B50;
+    border-bottom: white 8px solid;   // this line seperates the info text from the graph panel
+    border-radius: 15px 15px 0px 0px;   // top border rounded
+
+    // Shadow
+    box-shadow: 0px 10px 40px black;
+
+    // Text
+    h2 {
+        font-size: $h2-size;
+        font-weight: normal;
+        color: $main-colour;
+
+        // Slim margins
+        margin: 2% 10%;
+    }
+}
+
+// The Graphs inside the expanded Stat Card
+.graph-container {
+    // Colour & Design
+    background: rgba(0, 0, 0, 0.7);
+    border-bottom: #E52B50 8px solid;
+    border-radius: 0px 0px 15px 15px;   // bottom border rounded / top border flat
+
+    // Grid
+    display: grid;
+    place-items: center;
+
+    // Animation
+    transition: all 500ms;
+
+    // The actual graph
+    .graph {
+        transition: all 500ms;
+        max-height: 35vh;
+    }
+}
