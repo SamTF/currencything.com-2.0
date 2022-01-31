@@ -5,10 +5,12 @@ from datetime import datetime
 import re
 
 import users                            # list of all currency things and their relevant properties
+from explorer import Explorer           # explores data on the blockchain
 
 
 ######### INITIALISING APP #########
 app = Flask(__name__)
+explorer = Explorer()
 
 
 ######### API ROUTES #########
@@ -27,6 +29,17 @@ def user(username: str):
 
     return trades.to_json(orient='records')         # returns the filtered Blockchain to the client as JSON
 
+# Mining Milestones
+@app.route('/blockchain/milestones')
+def milestones():
+    ms = explorer.get_mining_milestones()
+
+    # dict format
+    ms.set_index('TXID', inplace=True) # setting the TX ID as key for the dict
+    return ms.to_dict()['MILESTONE']
+
+    # json list format
+    return ms.to_json(orient='records')
 
 
 ######### BLOCKCHAIN FUNCTIONS / PANDAS #########
@@ -37,9 +50,9 @@ def get_blockchain() -> pandas.DataFrame:
     Returns a pandas DataFrame.
     '''
     # Reading the blockchain
-    blockchain: pandas.DataFrame = pandas.read_csv('block.chain')
+    blockchain = explorer.blockchain
 
-    # Replacing user IDs with usernames ///surrounded by <a> tags
+    # Replacing user IDs with usernames
     blockchain.replace(users.replace_thing('mention', 'name'), inplace=True)
 
     # Extracing emote names from the discord emote code
