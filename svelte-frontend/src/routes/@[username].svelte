@@ -5,33 +5,32 @@
 <script context='module'>
     // This query is run before the page is rendered
     export async function load({url, params}) {
-        // console.log(url)
-        // console.log(params)
         const user = params.username
-        const data = `this is the user profile of ${user}`
 
         // fetching the User's Blockchain data as JSON before rendering the page
         let res = await fetch('http://localhost:3000/api/blockchain/@' + user)
         let trades  = await res.json()
 
-        return {props: {data, user, trades}}
+        // fetching the milestones
+        let res2 = await fetch('http://localhost:3000/api/blockchain/milestones')
+        let milestones = await res2.json()
+
+        return {props: {user, trades, milestones}}
     }
 </script>
 
 <!-- Regular client side JS -->
 <script>
-    export let data
-    export let user
-    export let trades
+    export let user         // the name of the user
+    export let trades       // the blockchain filtered to show only their transactions
+    export let milestones   // all currency thing milestones
 
     import Blockchain from "../components/Blockchain.svelte"
 </script>
 
 
 <!-- HTML -->
-<h1>{data}</h1>
+<h1>{user}'s currency things</h1>
 <p style="text-align: center;">Welcome to {user}'s currency thing page!</p>
 
-<Blockchain table_data={trades} />
-
-<!-- <Blockchain /> -->
+<Blockchain table_data={trades} milestones={milestones}/>

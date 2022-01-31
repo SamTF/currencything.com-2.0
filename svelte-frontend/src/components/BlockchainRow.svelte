@@ -2,8 +2,14 @@
 <!-- Used in order to format data API appropriately for the front-end, because l don't think it would be a good idea to hardcode the formatting on the back-end -->
 
 <script>
+    import dateFormat from 'dateformat' // l'm only using this because my own formatDate function glitches the fuck out on firefox...
+
     // This component takes in a Row object with these properties
     export let row = {ID: 0, INPUT: 'I', SIZE: 1, OUTPUT: 'O', EMOTE: 'pog.png', DATE: 'today'}
+
+    // This is an int or null, depending on whether this transaction was a milestone. If so, the value is the currency thing milestone
+    export let milestone
+
 
     // Gets the path to the wanted emote on the local static directory
     function getEmoteImg(emote) {
@@ -31,7 +37,8 @@
 </script>
 
 <!-- HTML -->
-<tr>
+<!-- Adds the Milestone CSS Class if this TX was a milestone. If so, also adds a data attribute with the Milestone value -->
+<tr class:milestone={milestone} data-milestone={milestone}>
     <!-- TX ID -->
     <td>{row.ID}</td>
 
@@ -61,7 +68,9 @@
 
     <!-- Date timestamp -->
     <td full-date={row.DATE.slice(0, -4)}>
-        {formatDate(row.DATE)}
+        <!-- {formatDate(row.DATE)} -->
+        <!-- {row.DATE.slice(0, -12).replaceAll('-', '/').replace('20', '')} -->
+        {dateFormat(row.DATE, 'shortDate')}
     </td>
 </tr>
 
