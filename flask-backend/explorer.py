@@ -20,9 +20,9 @@ class Explorer:
 
     @property
     def blockchain(self) -> pd.DataFrame:
-        # Only reloads the blockchain from disk once a day (maybe this is stupid)
-        # if (datetime.now() - self._last_updated).days < 1:
-        #     return self._blockchain
+        # Only reloads the blockchain from disk every 5 mins
+        if (datetime.now() - self._last_updated).total_seconds() <= (5 * 60):
+            return self._blockchain
 
         b = pd.read_csv(BLOCKCHAIN)
         b['SIZE'] = pd.to_numeric(b['SIZE'])    # Converts the SIZE column into INT type; otherwise it assumes STRING type
@@ -36,11 +36,38 @@ class Explorer:
     @property
     def supply(self) -> int:
         '''How many Currency Things have been mined in total.'''
-        b = self.blockchain.groupby(['INPUT']).sum()    # Groups df by Input then sums all currency things SENT BY each user - where the user is on the INPUT side of the trade
-        supply = b.loc[CREATOR]['SIZE']                 # Sums all currency things sent by the discord bot - aka total supply
+        b = self.blockchain.groupby(['INPUT']).sum()                                        # Groups df by Input then sums all currency things SENT BY each user - where the user is on the INPUT side of the trade
+        print(b)
+        supply = b.loc[CREATOR]['SIZE']                                                     # Sums all currency things sent by the discord bot - aka total supply
 
-        return supply
+        return int(supply)                                                                  # Converting numpy int64 to int
     
+
+    @property
+    def users(self) -> list[str]:
+        '''Returns a list of all Currency Thing users.'''
+        return self.blockchain.groupby(['OUTPUT']).sum().index.to_list()                    # getting a list of all the users that own currency things as discord @mentions
+    
+
+    def num_of_trades(self, user_only = False):
+        '''
+        Returns the total number of trades on the Blockchain.
+        '''
+        trades = self.blockchain
+        if user_only:
+            trades = trades.loc[trades['INPUT'] != CREATOR]                                 # Only count rows where the Currency Thing Bot was not involved
+
+        return len(trades.index)                                                            # returns the number of rows in the (filtered?) dataframe
+
+
+    def get_biggest_trade(self) -> int:
+        '''
+        Returns the trade with the largest size.
+        '''
+        rows = self.blockchain.sort_values('SIZE', ascending=False)                         # Sorts rows by trade size in descending order
+        biggest_trade = rows.iloc[0]['SIZE']                                                # the first row: biggest size
+        return int(biggest_trade)                                                           # converting numpy int64 to int
+
 
     def supply_over_tx(self, blockchain: pd.DataFrame) -> pd.DataFrame:
         '''

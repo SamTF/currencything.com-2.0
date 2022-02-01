@@ -1,4 +1,4 @@
-from flask import Flask, jsonify                 # The Main thing
+from flask import Flask, jsonify, request                 # The Main thing
 import pandas                           # Dataframe reading and manipulation
 import json
 from datetime import datetime
@@ -40,6 +40,30 @@ def milestones():
 
     # json list format
     return ms.to_json(orient='records')
+
+#  Blockchain Statistics
+@app.route('/blockchain/stats')
+def stats():
+    supply = explorer.supply
+    trades = explorer.num_of_trades()
+    user_trades = explorer.num_of_trades(True)
+    biggest_trade = explorer.get_biggest_trade()
+    users_mentions = explorer.users
+    usernames = [users.replace_thing('mention', 'name')[u] for u in users_mentions] # converting from discord @mentions to plain usernames
+
+    return {
+        'supply' : supply,
+        'trades' : trades,
+        'user_trades' : user_trades,
+        'users' : usernames,
+        'biggest_trade' : biggest_trade
+    }
+
+# testing optional parameters ex: ?key=value
+@app.route('/test')
+def test():
+    optional_value = request.args.get('reversed', False)
+    return f'<code>Reversed: {optional_value}</code>'
 
 
 ######### BLOCKCHAIN FUNCTIONS / PANDAS #########
