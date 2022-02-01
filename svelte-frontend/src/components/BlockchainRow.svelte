@@ -67,9 +67,9 @@
     </td>
 
     <!-- Date timestamp -->
-    <td full-date={row.DATE.slice(0, -4)}>
+    <!-- <td full-date={row.DATE.slice(0, -4)}> -->
+    <td full-date={dateFormat(row.DATE)}>
         <!-- {formatDate(row.DATE)} -->
-        <!-- {row.DATE.slice(0, -12).replaceAll('-', '/').replace('20', '')} -->
         {dateFormat(row.DATE, 'shortDate')}
     </td>
 </tr>
