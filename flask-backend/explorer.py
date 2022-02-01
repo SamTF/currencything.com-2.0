@@ -1,7 +1,7 @@
 ### This script only explores the data currently on the blockchain.
 
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 pd.options.mode.chained_assignment = None
 
@@ -21,12 +21,12 @@ class Explorer:
     @property
     def blockchain(self) -> pd.DataFrame:
         # Only reloads the blockchain from disk every 5 mins
-        if (datetime.now() - self._last_updated).total_seconds() <= (5 * 60):
-            return self._blockchain
+        # if (datetime.now() - self._last_updated).total_seconds() <= (5 * 60):
+        #     return self._blockchain
 
         b = pd.read_csv(BLOCKCHAIN)
         b['SIZE'] = pd.to_numeric(b['SIZE'])    # Converts the SIZE column into INT type; otherwise it assumes STRING type
-        # b['TIME'] = pd.to_datetime(b['TIME'])   # Converts the TIME column into datetime format
+        b['TIME'] = pd.to_datetime(b['TIME'])   # Converts the TIME column into datetime format
         self._last_updated = datetime.now()
 
         return b
@@ -37,7 +37,6 @@ class Explorer:
     def supply(self) -> int:
         '''How many Currency Things have been mined in total.'''
         b = self.blockchain.groupby(['INPUT']).sum()                                        # Groups df by Input then sums all currency things SENT BY each user - where the user is on the INPUT side of the trade
-        print(b)
         supply = b.loc[CREATOR]['SIZE']                                                     # Sums all currency things sent by the discord bot - aka total supply
 
         return int(supply)                                                                  # Converting numpy int64 to int
@@ -49,26 +48,62 @@ class Explorer:
         return self.blockchain.groupby(['OUTPUT']).sum().index.to_list()                    # getting a list of all the users that own currency things as discord @mentions
     
 
-    def num_of_trades(self, user_only = False):
+    def num_of_trades(self, days = 0, user_only = False) -> int:
         '''
         Returns the total number of trades on the Blockchain.
+
+        days: if specified, only counts TXs from the last X days.
+        user_only: only displays trades executed by users and not by the Currency Thing bot
         '''
-        trades = self.blockchain
+        trades = self.blockchain if days < 1 else self.tx_by_time(days)                     # checks entire blockchain, or last few days if "days" value is specified
+        print(trades)
+
         if user_only:
             trades = trades.loc[trades['INPUT'] != CREATOR]                                 # Only count rows where the Currency Thing Bot was not involved
 
         return len(trades.index)                                                            # returns the number of rows in the (filtered?) dataframe
+    
+    def things_mined_by_time(self, days = 0) -> int:
+        '''
+        Returns the total amount of currency things mined in the last X days as an INT.
+
+        days: if specified, only counts TXs from the last X days.
+        '''
+        rows = self.blockchain if days < 1 else self.tx_by_time(days)                       # checks entire blockchain, or last few days if "days" value is specified
+        mined = rows.loc[rows['INPUT'] == CREATOR]                                          # Gets all trades where the Currency Thing Bot is the one sending things
+        mined = mined['SIZE'].sum()                                                         # Sums the size of currency things sent
+
+        return int(mined)
 
 
-    def get_biggest_trade(self) -> int:
+    def biggest_trade(self, days = 0) -> int:
         '''
         Returns the trade with the largest size.
+
+        days: if specified, only counts TXs from the last X days.
         '''
-        rows = self.blockchain.sort_values('SIZE', ascending=False)                         # Sorts rows by trade size in descending order
+        rows = self.blockchain if days < 1 else self.tx_by_time(days)                       # checks entire blockchain, or last few days if "days" value is specified
+
+        rows.sort_values('SIZE', ascending=False, inplace=True)                             # Sorts rows by trade size in descending order
         biggest_trade = rows.iloc[0]['SIZE']                                                # the first row: biggest size
         return int(biggest_trade)                                                           # converting numpy int64 to int
 
 
+    ### HELPER FUNCTIONS ######
+    # helper function to filter blockchain txs by latest X days
+    def tx_by_time(self, days:int = 1) -> pd.DataFrame:
+        '''
+        Returns the transactions that occured in the last X days.
+
+        days: amount of days to subtract from current datetime. (default = 1)
+        '''
+        date = datetime.now() - timedelta(days=days)                                        # Gets the datetime value a specified amount of hours ago
+        filtered_tx = self.blockchain.loc[self.blockchain['TIME'] > date]                   # Gets all blockchain trades with a time greater than that value
+
+        return filtered_tx
+
+
+    # Cumulative sum of currency things at each transastion
     def supply_over_tx(self, blockchain: pd.DataFrame) -> pd.DataFrame:
         '''
         Returns a DataFrame with the total amount of currency things in circulation at each transaction ID.\n
@@ -125,8 +160,9 @@ class Explorer:
 if __name__ == '__main__':
     print('hello?')
     ex = Explorer()
-    print(ex.supply)
-    print(ex.supply_over_tx(ex.blockchain))
+    # print(ex.supply)
+    # print(ex.supply_over_tx(ex.blockchain))
+    # print(ex.tx_by_time(100))
+    print(ex.biggest_trade(-5))
     
-    ms = ex.get_mining_milestones()
-    print(ms.iloc[1]['MILESTONE'])
+    

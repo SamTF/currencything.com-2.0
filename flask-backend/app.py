@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 import re
 
+from sympy import per
+
 import users                            # list of all currency things and their relevant properties
 from explorer import Explorer           # explores data on the blockchain
 
@@ -44,20 +46,13 @@ def milestones():
 #  Blockchain Statistics
 @app.route('/blockchain/stats')
 def stats():
-    supply = explorer.supply
-    trades = explorer.num_of_trades()
-    user_trades = explorer.num_of_trades(True)
-    biggest_trade = explorer.get_biggest_trade()
-    users_mentions = explorer.users
-    usernames = [users.replace_thing('mention', 'name')[u] for u in users_mentions] # converting from discord @mentions to plain usernames
+    period = request.args.get('period', 0)
+    try:
+        period = int(period)
+    except:
+        period = 0
 
-    return {
-        'supply' : supply,
-        'trades' : trades,
-        'user_trades' : user_trades,
-        'users' : usernames,
-        'biggest_trade' : biggest_trade
-    }
+    return get_blockchain_stats(period)
 
 # testing optional parameters ex: ?key=value
 @app.route('/test')
@@ -107,6 +102,24 @@ def get_user_trades(mention: str) -> pandas.DataFrame:
     return filtered
 
 
+# Getting general Blockchain Statistics by time period
+def get_blockchain_stats(period: int) -> dict[str, any]:
+    supply          = explorer.supply
+    mined           = explorer.things_mined_by_time(days=period)
+    trades          = explorer.num_of_trades(days=period)
+    user_trades     = explorer.num_of_trades(days=period, user_only=True)
+    biggest_trade   = explorer.biggest_trade(days=period)
+    usernames       = [users.replace_thing('mention', 'name')[u] for u in explorer.users] # converting from discord @mentions to plain usernames
+
+    return {
+        'supply'        : supply,
+        'mined'         : mined,
+        'trades'        : trades,
+        'user_trades'   : user_trades,
+        'users'         : usernames,
+        'biggest_trade' : biggest_trade,
+        'period': period
+    }
 
 
 
