@@ -5,6 +5,7 @@
 <script>
     // Imports
     import StatCard from '../components/StatCard.svelte'
+    import PeriodBtn from '../components/PeriodBtn.svelte'
 
     // Fetching Currency Thing Stats for the given time period
     async function fetchStats(period=0) {
@@ -15,10 +16,33 @@
         return stats
     }
 
-    const promise = fetchStats(0)
+    let promise = fetchStats(0)
+
+    function onPeriodFilter(event) {
+        console.log('receving event')
+        const period = event.detail
+        console.log(period)
+    }
+
+    const periodButtons = {
+        '1D': 1,
+        '7D': 7,
+        '31D': 31,
+        'ALL': 0
+    }
 </script>
 
 <!-- HTML -->
+<div class="button-container">
+    {#each Object.entries(periodButtons) as [label, period]}
+        <PeriodBtn label={label}   periodValue={period}   on:filter={onPeriodFilter} selected={false}/>
+    {/each}
+    <!-- <PeriodBtn label='1D'   periodValue=1   on:filter={onPeriodFilter} selected={false}/>
+    <PeriodBtn label='7D'   periodValue=7   on:filter={onPeriodFilter} selected={false}/>
+    <PeriodBtn label='31D'  periodValue=31  on:filter={onPeriodFilter} selected={false}/>
+    <PeriodBtn label='ALL'  periodValue=0   on:filter={onPeriodFilter} selected={false}/> -->
+</div>
+
 <div class="currency-stats">
 
     <!-- Fetching the data, and displaying empty values while loading -->
