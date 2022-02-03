@@ -12,6 +12,7 @@
     export let data = 3             // the data to display in the text field
     export let label = 'title'      // text to display after the data
     export let colour = 'accent'    // background colour of the card
+    export let phrase = ''          // phrase to display at the end, if any (ex: in the last 24h, this week, total)
 
 
     // Use to show/hide the full graphs. Hidden by default.
@@ -26,7 +27,7 @@
 <div class="stat-panel clickable" on:click={toggle}>
     <!-- Statistics Info Box -->
     <div class={`stat-card bg-${colour}`}>
-        <h2>... <b>{data}</b> {label}</h2>
+        <h2>...<b>{data}</b> {label} {phrase}</h2>
     </div>
 
     <!-- Expanded Graph -->
