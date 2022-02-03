@@ -7,14 +7,13 @@
 
     // Props
     export let label = '1D'
-    export let periodValue = 1
+    export let period = 1
     export let selected = false
     
     const dispatch = createEventDispatcher()
     function onClick () {
         console.log('emitting event...')
-        dispatch('filter', periodValue)
-        selected = !selected
+        dispatch('filter', {label, period})
     }
 </script>
 
