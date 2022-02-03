@@ -11,9 +11,10 @@
 
 .button {
     // font
-    font-family: $font-family;
+    font-family: $font-alt;
     font-size: $h2-size;
     color: $accent-colour;
+    font-weight: normal;
 
     // box
     background: whitesmoke;
