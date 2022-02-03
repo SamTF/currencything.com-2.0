@@ -16,50 +16,75 @@
         return stats
     }
 
+    // Fetching all time currency thing stats
     let promise = fetchStats(0)
 
+    // Re-fetching the stats data and reloading the UI when clicking a filter button
     function onPeriodFilter(event) {
         console.log('receving event')
-        const period = event.detail
-        console.log(period)
+        const {label, period} = event.detail
+
+        // Checking if the clicked button is already selected
+        if (periodButtons[label].selected) {
+            console.log("Button is already selected!")
+            return
+        }
+
+        // unselecting all other buttons (only one button can be selected at a time)
+        for (const key in periodButtons) {
+            periodButtons[key].selected = false
+        }
+        // selecting the button that was just clicked
+        periodButtons[label].selected = true
+
+        // fetching the data for the wanted period and refreshing the UI
+        promise = fetchStats(period)
     }
 
+    // Dictionary of all the buttons and their values
     const periodButtons = {
-        '1D': 1,
-        '7D': 7,
-        '31D': 31,
-        'ALL': 0
+        '1D':   {period: 1,     selected: false,    phrase: 'in the last 24h' },
+        '7D':   {period: 7,     selected: false,    phrase: 'this week' },
+        '31D':  {period: 31,    selected: false,    phrase: 'this month' },
+        'ALL':  {period: 0,     selected: true,     phrase: 'total' },
     }
+
+    // Gets the phrase property of the currently selected Period filter
+    $: phrase = Object.values(periodButtons)
+        .filter(x => x.selected)[0]
+        .phrase
+        
 </script>
 
 <!-- HTML -->
+<!-- The time period filtering buttons -->
 <div class="button-container">
-    {#each Object.entries(periodButtons) as [label, period]}
-        <PeriodBtn label={label}   periodValue={period}   on:filter={onPeriodFilter} selected={false}/>
+    {#each Object.entries(periodButtons) as [label, value]}
+        <PeriodBtn label={label}
+            period={value.period}
+            selected={value.selected}
+            on:filter={onPeriodFilter} />
     {/each}
-    <!-- <PeriodBtn label='1D'   periodValue=1   on:filter={onPeriodFilter} selected={false}/>
-    <PeriodBtn label='7D'   periodValue=7   on:filter={onPeriodFilter} selected={false}/>
-    <PeriodBtn label='31D'  periodValue=31  on:filter={onPeriodFilter} selected={false}/>
-    <PeriodBtn label='ALL'  periodValue=0   on:filter={onPeriodFilter} selected={false}/> -->
 </div>
 
+<!-- The actual stat cards -->
 <div class="currency-stats">
 
     <!-- Fetching the data, and displaying empty values while loading -->
     {#await promise}
-        <StatCard label='currency things in the wild'           data='' />
-        <StatCard label='currency things mined'                 data=''     colour='blue'   />
-        <StatCard label='trades'                                data=''     colour='purple' />
-        <StatCard label='user trades'                           data=''     colour='yellow' />
-        <StatCard label='currently holding'                     data=''     colour='green' />
-        <StatCard label='currency things was the biggest trade' data=''     colour='pink' />
+        <StatCard label='currency things in the wild'           data='...'     colour='accent'              />
+        <StatCard label='currency things mined'                 data='...'     colour='blue'    {phrase}    />
+        <StatCard label='trades'                                data='...'     colour='purple'  {phrase}    />
+        <StatCard label='user trades'                           data='...'     colour='yellow'  {phrase}    />
+        <StatCard label='currently holding'                     data='...'     colour='green'               />
+        <StatCard label='currency things was the biggest trade' data='...'     colour='pink'    {phrase}    />
     {:then stats}
-        <StatCard label='currency things in the wild'           data={stats.supply} />
-        <StatCard label='currency things mined'                 data={stats.supply}         colour='blue'   />
-        <StatCard label='trades'                                data={stats.trades}         colour='purple' />
-        <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' />
-        <StatCard label='currently holding'                     data={stats.users}          colour='green' />
-        <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink' />
+        <StatCard label='currency things in the wild'           data={stats.supply}         colour='accent'             />
+        <StatCard label='currency things mined'                 data={stats.mined}          colour='blue'   {phrase}    />
+        <StatCard label='trades'                                data={stats.trades}         colour='purple' {phrase}    />
+        <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' {phrase}    />
+        <StatCard label='currently holding'                     data={stats.users}          colour='green'              />
+        <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink'   {phrase}    />
     {:catch error}
         <p style="color: red">{error.message}</p>
     {/await}
