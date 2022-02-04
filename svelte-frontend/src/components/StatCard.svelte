@@ -5,6 +5,8 @@
 
 <!-- JS -->
 <script>
+    import SFX from '../sfx'
+
     // Import transition animation
     import { slide } from 'svelte/transition'
 
@@ -20,6 +22,10 @@
     const toggle = () => {
         console.log('toggling graph...')
         toggled = !toggled
+
+        // playing sfx for opening and closing
+        if(toggled) SFX.open.play()
+        else        SFX.close.play()
     }
 </script>
 
@@ -34,7 +40,7 @@
     <!-- This version keeps at panel on, but slides AND scales in the Graph -->
     <div class="graph-container">
         {#if toggled}
-            <img src="https://currencything.com/static/graphs/supply.svg" alt="line_chart.svg" class="graph"  transition:slide='{{duration: 500}}'>
+            <img src="https://currencything.com/static/graphs/supply.svg" alt="line_chart.svg" class="graph"  transition:slide='{{duration: 600}}'>
         {/if}
     </div>
 </div>

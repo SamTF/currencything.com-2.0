@@ -8,6 +8,8 @@ let SFX = {
     honk: '',
     click1: '',
     click2: '',
+    open: 'openwindow.ogg',
+    close: 'close.ogg'
 }
 
 // The Audio components must be created client-side
@@ -19,6 +21,8 @@ if(typeof Audio != "undefined") {
         honk:           new Audio(sfxDir + 'honk.mp3'),
         click1:         new Audio(sfxDir + 'click1.ogg'),
         click2:         new Audio(sfxDir + 'click2.ogg'),
+        open:           new Audio(sfxDir + 'openwindow.ogg'),    
+        close:          new Audio(sfxDir + 'close.ogg'),    
     }
 }
 
