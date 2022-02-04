@@ -12,8 +12,12 @@
         let res2 = await fetch('http://localhost:3000/api/blockchain/milestones')
         let milestones = await res2.json()
 
+        // fetching the blockchain stats
+        let res3 = await fetch('http://localhost:3000/api/blockchain/stats')
+        let stats = await res3.json()
+
         if (res.ok) {
-            return {props: {blockchain, milestones}}
+            return {props: {blockchain, milestones, stats}}
         } else {
             return {props: 'error'}
         }
@@ -24,6 +28,7 @@
     // "importing" the data from the SSR "load" function
     export let blockchain
     export let milestones
+    export let stats
 
     // const newData = blockchain.map(row => ({...row, EMOTE: `/images/emotes/{${row.EMOTE}}.webp`}))
     // console.log(newData)
@@ -56,7 +61,8 @@
 <!-- page content -->
 <h1>currency thing blockchain explorer</h1>
 <a href="/about"><p style="text-align: center;">learn more about currency things</p></a>
-<CurrencyStats />
+
+<CurrencyStats {stats} />
 <hr>
 
 <!-- <Blockchain table_data={$blockchain} /> -->

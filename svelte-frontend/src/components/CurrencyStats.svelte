@@ -7,6 +7,9 @@
     import StatCard from '../components/StatCard.svelte'
     import PeriodBtn from '../components/PeriodBtn.svelte'
 
+    // Props
+    export let stats = {}
+
     // Fetching Currency Thing Stats for the given time period
     async function fetchStats(period=0) {
         const URL = `http://localhost:3000/api/blockchain/stats?period=${period}`
@@ -39,6 +42,12 @@
 
         // fetching the data for the wanted period and refreshing the UI
         promise = fetchStats(period)
+
+        // saving the fetched data to the local stats variable
+        promise.then(value => {
+            console.log(value)
+            stats = value
+        })
     }
 
     // Dictionary of all the buttons and their values
@@ -69,24 +78,10 @@
 
 <!-- The actual stat cards -->
 <div class="currency-stats">
-
-    <!-- Fetching the data, and displaying empty values while loading -->
-    {#await promise}
-        <StatCard label='currency things in the wild'           data='...'     colour='accent'              />
-        <StatCard label='currency things mined'                 data='...'     colour='blue'    {phrase}    />
-        <StatCard label='trades'                                data='...'     colour='purple'  {phrase}    />
-        <StatCard label='user trades'                           data='...'     colour='yellow'  {phrase}    />
-        <StatCard label='currently holding'                     data='...'     colour='green'               />
-        <StatCard label='currency things was the biggest trade' data='...'     colour='pink'    {phrase}    />
-    {:then stats}
-        <StatCard label='currency things in the wild'           data={stats.supply}         colour='accent'             />
-        <StatCard label='currency things mined'                 data={stats.mined}          colour='blue'   {phrase}    />
-        <StatCard label='trades'                                data={stats.trades}         colour='purple' {phrase}    />
-        <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' {phrase}    />
-        <StatCard label='currently holding'                     data={stats.users}          colour='green'              />
-        <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink'   {phrase}    />
-    {:catch error}
-        <p style="color: red">{error.message}</p>
-    {/await}
-    
+    <StatCard label='currency things in the wild'           data={stats.supply}         colour='accent'             />
+    <StatCard label='currency things mined'                 data={stats.mined}          colour='blue'   {phrase}    />
+    <StatCard label='trades'                                data={stats.trades}         colour='purple' {phrase}    />
+    <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' {phrase}    />
+    <StatCard label='currently holding'                     data={stats.users}          colour='green'              />
+    <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink'   {phrase}    />    
 </div>
