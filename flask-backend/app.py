@@ -26,10 +26,16 @@ def blockchain():
 # Fetching user trades as JSON
 @app.route('/blockchain/@<username>')
 def user(username: str):
-    user = users.get_user(username)                 # fetching the User object by name
-    trades = get_user_trades(username)              # gets all of the user's trades by Username
+    descending = request.args.get('descending', None)   # whether the trades should be in ascending or descending order
+    user = users.get_user(username)                     # fetching the User object by name
+    trades = get_user_trades(username)                  # gets all of the user's trades by Username
 
-    return trades.to_json(orient='records')         # returns the filtered Blockchain to the client as JSON
+    # sorting by newest trade first if there's a descending parameter with any value. why? -> https://stackoverflow.com/questions/65575796/why-does-the-flask-bool-query-parameter-always-evaluate-to-true
+    if descending:
+        trades.sort_index(axis=0, ascending=False, inplace=True)
+
+    return trades.to_json(orient='records')             # returns the filtered Blockchain to the client as JSON
+
 
 # Mining Milestones
 @app.route('/blockchain/milestones')
@@ -43,16 +49,23 @@ def milestones():
     # json list format
     return ms.to_json(orient='records')
 
-#  Blockchain Statistics
+
+# Blockchain Statistics
 @app.route('/blockchain/stats')
 def stats():
-    period = request.args.get('period', 0)
-    try:
-        period = int(period)
-    except:
-        period = 0
+    # getting a query parameter ?period=xxx as int, with a default value of 0
+    period = request.args.get('period', 0, type=int)
 
     return get_blockchain_stats(period)
+
+
+# User specific statistics
+@app.route('/blockchain/stats/@<username>')
+def stats_user(username: str):
+    user = users.get_user(username)                     # fetching the User object by name
+    stats = get_user_stats(user)
+
+    return stats
 
 # testing optional parameters ex: ?key=value
 @app.route('/test')
@@ -86,21 +99,6 @@ def get_blockchain() -> pandas.DataFrame:
     return blockchain
 
 
-# Gets all trades a user was involved in using their discord @mention
-def get_user_trades(mention: str) -> pandas.DataFrame:
-    '''
-    Filtered Blockchain containing only trades by a specific user.\n
-    Returns a pandas DataFrame.
-    '''
-    blockchain = get_blockchain()
-
-    # Filtering all rows where User is either Input or Output
-    filtered = blockchain.loc[(blockchain['INPUT'] == mention) | (blockchain['OUTPUT'] == mention)]
-
-    print(f'[APP.PY] >>> Fetching trades for user: {mention}')
-
-    return filtered
-
 
 # Getting general Blockchain Statistics by time period
 def get_blockchain_stats(period: int) -> dict[str, any]:
@@ -121,6 +119,34 @@ def get_blockchain_stats(period: int) -> dict[str, any]:
         'period': period
     }
 
+
+
+######### USER SPECIFIC #########
+# Gets all trades a user was involved in using their Username
+def get_user_trades(username: str) -> pandas.DataFrame:
+    '''
+    Filtered Blockchain containing only trades by a specific user.\n
+    Returns a pandas DataFrame.
+    '''
+    blockchain = get_blockchain()
+
+    # Filtering all rows where User is either Input or Output
+    user_txs = blockchain.loc[(blockchain['INPUT'] == username) | (blockchain['OUTPUT'] == username)]
+
+    return user_txs
+
+# Gets all number statistics relative to the chosen user
+def get_user_stats(user: users.User):
+    '''
+    Gets interesting statistics about a user's experience with Currency Things!
+    '''
+    balance = explorer.get_balance(user.mention)
+
+    return {
+        'name' : user.name,
+        'mention' : user.mention,
+        'balance' : balance
+    }
 
 
 

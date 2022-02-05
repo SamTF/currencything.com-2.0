@@ -29,8 +29,36 @@
 </script>
 
 
+
+<!-- METADATA -->
+<svelte:head>
+    <title>{user}'s page</title>
+    <meta name="description" content="this is the user profile of {user}">
+</svelte:head>
+
 <!-- HTML -->
 <h1>{user}'s currency things</h1>
 <p style="text-align: center;">Welcome to {user}'s currency thing page!</p>
 
-<Blockchain table_data={trades} milestones={milestones}/>
+<section class="user-profile">
+    <div class="avatar-container">
+        <img src="https://currencything.com/static/images/avatars/216972321099874305.png" alt="{user}'s avatar" class="avatar">
+    </div>
+
+    <div class="user-info">
+        <div class="user-things">
+            <p>{user} has XXXX currency things</p>
+        </div>
+
+        <div class="stats">
+            <p>...has mined <b>XXX</b> things</p>
+            <p>...has received <b>XXX</b> things</p>
+            <p>...has sent <b>XXX</b> things</p>
+            <p>...participated in <b>XXX</b> trades</p>
+            <p>...biggest gift sent was <b>XXX</b> things</p>
+            <p>...biggest gift received was <b>XXX</b> things</p>
+        </div>
+    </div>
+</section>
+
+<Blockchain table_data={trades.reverse()} milestones={milestones}/>

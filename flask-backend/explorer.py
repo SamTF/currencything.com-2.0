@@ -117,6 +117,24 @@ class Explorer:
         return supply
     
     
+    ### USER STATS ######
+    # Gets the amount of currency things held by a user
+    def get_balance(self, user: str) -> int:
+        '''
+        Gets the amount of currency things held by a user.
+
+        user : discord @mention : <@123456789>
+        '''
+
+        output = self.blockchain.groupby(['OUTPUT']).sum()                              # OUTPUT Dataframe - sums all currency things SENT TO each user - where the user is on the OUTPUT side of the trade
+        input = self.blockchain.groupby(['INPUT']).sum()                                # INPUT  Dataframe - sums all currency things SENT BY each user - where the user is on the INPUT  side of the trade
+
+        try:    sent = input.loc[user]['SIZE']                                          # Check in case a user has only received and never sent to avoid Key Errors in the INPUT table
+        except: sent = 0       
+
+        balance = output.loc[user]['SIZE'] - sent                                       # Subtracts the amount sent (INPUT table) from the amount received (OUTPUT table) to get the current balance
+        return int(balance)                                                             # Converting numpy int64 to int
+ 
 
     ### MILESTONES ######
     def who_mined_nth_thing(self, thing: int, cum_supply: pd.DataFrame) -> tuple[int, int]:
