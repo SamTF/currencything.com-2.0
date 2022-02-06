@@ -48,20 +48,26 @@ class Explorer:
         return self.blockchain.groupby(['OUTPUT']).sum().index.to_list()                    # getting a list of all the users that own currency things as discord @mentions
     
 
-    def num_of_trades(self, days = 0, user_only = False) -> int:
+    def num_of_trades(self, days = 0, users_only = False, specific_user: str = None) -> int:
         '''
         Returns the total number of trades on the Blockchain.
 
         days: if specified, only counts TXs from the last X days.
-        user_only: only displays trades executed by users and not by the Currency Thing bot
+        users_only: only displays trades executed by users and not by the Currency Thing bot
+        specific_user: only count trades involving the mentioned user (by discord @mention)
         '''
         trades = self.blockchain if days < 1 else self.tx_by_time(days)                     # checks entire blockchain, or last few days if "days" value is specified
+
+        if users_only:
+            trades = trades.loc[trades['INPUT'] != CREATOR]                                 # Only count rows where the Currency Thing Bot was not involved
+        
+        if specific_user:                                                                   # Filtering all trades where the specified User is either Input or Output
+            trades = trades.loc[(trades['INPUT'] == specific_user) | (trades['OUTPUT'] == specific_user)]
+
         print(trades)
 
-        if user_only:
-            trades = trades.loc[trades['INPUT'] != CREATOR]                                 # Only count rows where the Currency Thing Bot was not involved
-
         return len(trades.index)                                                            # returns the number of rows in the (filtered?) dataframe
+
     
     def things_mined_by_time(self, days = 0) -> int:
         '''
@@ -76,14 +82,25 @@ class Explorer:
         return int(mined)
 
 
-    def biggest_trade(self, days = 0) -> int:
+    def biggest_trade(self, days = 0, user_sent:str = None, user_received:str = None) -> int:
         '''
         Returns the trade with the largest size.
 
         days: if specified, only counts TXs from the last X days.
+        user_sent: if specified, only counts TXs sent BY the user.
+        user_received: if specified, only counts TXs sent TO the user.
         '''
         rows = self.blockchain if days < 1 else self.tx_by_time(days)                       # checks entire blockchain, or last few days if "days" value is specified
 
+        # checking for user specific txs
+        if user_sent:                                                                       # Gets all trades where the user was on the INPUT
+            rows = rows[rows['INPUT'] == user_sent]
+            if rows.empty: return 0                                                         # Returns 0 if user was never the input (bots)
+            
+        elif user_received:                                                                 # Filters rows where Currency Thing was NOT the INPUT, and the user was the OUTPUT
+            rows = rows[(rows['INPUT'] != CREATOR) & (rows['OUTPUT'] == user_received)]
+
+        # Getting the value now
         rows.sort_values('SIZE', ascending=False, inplace=True)                             # Sorts rows by trade size in descending order
         biggest_trade = rows.iloc[0]['SIZE']                                                # the first row: biggest size
         return int(biggest_trade)                                                           # converting numpy int64 to int
@@ -134,6 +151,48 @@ class Explorer:
 
         balance = output.loc[user]['SIZE'] - sent                                       # Subtracts the amount sent (INPUT table) from the amount received (OUTPUT table) to get the current balance
         return int(balance)                                                             # Converting numpy int64 to int
+    
+
+    def mined_by_user(self, user: str) -> int:
+        '''
+        Returns how many currency things a user has mined in total.
+        user: discord @mention
+        '''
+        b = self.blockchain
+        user_mined = b.loc[(b['INPUT'] == CREATOR) & (b['OUTPUT'] == user)]             # All currency things sent by the Currency Thing bot to the requested User : mined by user
+        total_mined = user_mined.groupby(['OUTPUT']).sum()['SIZE']                      # Summing up the total mining output
+
+        return int (total_mined)
+    
+
+    def user_things_sent(self, user: str) -> int:
+        '''
+        Gets the total amount of currency things that a user has sent to others.
+        user : discord @mention : <@123456789>
+        '''
+        input = self.blockchain.groupby(['INPUT']).sum()                                # INPUT Dataframe - sums all currency things SENT BY each user - where the user is on the INPUT side of the trade
+
+        try:    sent = input.loc[user]['SIZE']                                          # Check in case a user has only received and never sent to avoid Key Errors in the Input table
+        except: sent = 0
+
+        return int(sent)
+    
+
+    def user_things_received(self, user: str) -> int:
+        '''
+        Gets the amount of currency things sent to this user by others.
+        user : discord @mention : <@123456789>
+        '''
+        # Filters rows where the INPUT was NOT Currency Thing AND the OUTPUT was the desired user
+        b = self.blockchain
+        filtered = b.loc[(b['INPUT'] != CREATOR) & (b['OUTPUT'] == user)]
+
+        # Sums the results
+        things_received = filtered['SIZE'].sum()
+        
+        return int(things_received)
+
+
  
 
     ### MILESTONES ######
@@ -181,6 +240,7 @@ if __name__ == '__main__':
     # print(ex.supply)
     # print(ex.supply_over_tx(ex.blockchain))
     # print(ex.tx_by_time(100))
-    print(ex.biggest_trade(-5))
+    # print(ex.biggest_trade(-5))
+    print(ex.mined_by_user('<@216972321099874305>'))
     
     

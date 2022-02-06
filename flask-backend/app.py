@@ -105,7 +105,7 @@ def get_blockchain_stats(period: int) -> dict[str, any]:
     supply          = explorer.supply
     mined           = explorer.things_mined_by_time(days=period)
     trades          = explorer.num_of_trades(days=period)
-    user_trades     = explorer.num_of_trades(days=period, user_only=True)
+    user_trades     = explorer.num_of_trades(days=period, users_only=True)
     biggest_trade   = explorer.biggest_trade(days=period)
     usernames       = [users.replace_thing('mention', 'name')[u] for u in explorer.users] # converting from discord @mentions to plain usernames
 
@@ -140,12 +140,25 @@ def get_user_stats(user: users.User):
     '''
     Gets interesting statistics about a user's experience with Currency Things!
     '''
-    balance = explorer.get_balance(user.mention)
+    balance             = explorer.get_balance(user.mention)
+    trades              = explorer.num_of_trades(days=0, specific_user=user.mention)
+    user_trades         = explorer.num_of_trades(days=0, specific_user=user.mention, users_only=True)
+    mined               = explorer.mined_by_user(user.mention)
+    sent                = explorer.user_things_sent(user.mention)
+    received            = explorer.user_things_received(user.mention)
+    biggest_sent        = explorer.biggest_trade(user_sent=user.mention)
+    biggest_received    = explorer.biggest_trade(user_received=user.mention)
 
     return {
-        'name' : user.name,
-        'mention' : user.mention,
-        'balance' : balance
+        'name'              : user.name,
+        'balance'           : balance,
+        'trades'            : trades,
+        'user_trades'       : user_trades,
+        'mined'             : mined,
+        'things_sent'       : sent,
+        'things_received'   : received,
+        'biggest_sent'      : biggest_sent,
+        'biggest_received'  : biggest_received
     }
 
 
