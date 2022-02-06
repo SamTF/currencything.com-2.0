@@ -1,0 +1,9 @@
+// Contains the general design of a Card element
+// Meant to be included and extended by actual classes
+
+@mixin card {
+    // Colour & Design
+    background-color: $bright-accent;       // default background colour is bright accent
+    border-bottom: white 8px solid;       // straight solid line at the bottom
+    border-radius: 15px 15px 0px 0px;       // top border rounded, bottom border flat
+}

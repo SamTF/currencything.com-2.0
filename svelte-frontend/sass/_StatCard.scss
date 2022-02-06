@@ -21,9 +21,7 @@
     place-items: center;
 
     // Colour & Design
-    background-color: #E52B50;
-    border-bottom: white 8px solid;   // this line seperates the info text from the graph panel
-    border-radius: 15px 15px 0px 0px;   // top border rounded
+    @include card;
 
     // Shadow
     box-shadow: 0px 10px 40px black;
