@@ -1,0 +1,80 @@
+// This is the Card with the User's info & stats on their user page
+
+$things-accent: #5cfaff;
+
+// The Main container of the User Profile
+// Used to center the profile card and allow for width overflow
+.user-profile {
+    display: grid;
+    place-items: center;
+}
+
+// The coloured card holding the profile info
+.user-profile-card {
+    // Width
+    width: 60vw;
+
+    // Size
+    min-height: 30vh;
+    height: fit-content;
+
+    // Grid layout
+    display: grid;
+    // | avatar | info info info |
+    grid-template-columns: 25% 1fr;
+
+    // Colour & Design
+    @include card;
+}
+
+// Cointainer for the profile picture
+.avatar-container {
+    display: grid;
+    place-items: center;
+
+    // Profile picture
+    .avatar {
+        border-radius: 100%;
+        height: 20vmin;
+        max-height: 250px;
+    }
+}
+
+// This is where all the text goes
+.user-info {
+    margin: 2% 0%;
+
+    // Resetting paragraph margins
+    p {
+        margin: 0;
+    }
+
+
+    // "User has XXX currency things"
+    .user-things {
+        margin-bottom: 2rem;
+
+        // Same decoration and style as regular H1, but smaller, left-aligned and inline to be used with p tags
+        h1 {
+            font-size: 4vmin;
+            text-align: left;
+            margin: 0;
+            display: inline-block;
+        }
+
+        p {
+            display: inline-block;
+            text-align: right;
+            color: $things-accent;
+        }
+    }
+
+    // The list of user statistics
+    .stats {
+        // Grid layout
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(20vw, 1fr));
+    }
+
+}

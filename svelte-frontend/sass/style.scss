@@ -6,6 +6,8 @@
 @import 'FONTS';
 @import 'CURSORS';
 @import 'COLOURS';
+// Mixins
+@import 'Card';
 // Styles
 @import 'BlockchainTable';
 @import 'ScrollBtns';
@@ -14,6 +16,7 @@
 @import 'Milestone';
 @import 'StatCard';
 @import 'Buttons';
+@import 'UserProfile';
 
 // Reset
 * {
@@ -78,5 +81,10 @@ a {
 // Any clickable/interactive element
 .clickable {
     cursor: $cursor-pointer;
+}
+
+// Any element with a smooth black shadow
+.shadow {
+    filter: drop-shadow(0px 10px 30px black);
 }
 
