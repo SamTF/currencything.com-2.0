@@ -21,7 +21,7 @@
     place-items: center;
 
     // Colour & Design
-    @include card;
+    @extend %card;
 
     // Shadow
     box-shadow: 0px 10px 40px black;

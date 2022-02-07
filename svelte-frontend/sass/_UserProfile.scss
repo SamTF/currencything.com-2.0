@@ -24,7 +24,7 @@ $things-accent: #5cfaff;
     grid-template-columns: 25% 1fr;
 
     // Colour & Design
-    @include card;
+    @extend %card;
 }
 
 // Cointainer for the profile picture
