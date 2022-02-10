@@ -31,6 +31,13 @@ class Explorer:
 
         return b
     
+    @property
+    def mined(self) -> pd.DataFrame:
+        '''
+        Returns the Blockchain including only mining rewards (where Currency Thing is the Input)
+        '''
+        return self.blockchain.loc[self.blockchain['INPUT'] == CREATOR]                     # All currency things sent by the Currency Thing bot (mined)
+    
 
     ### GENERAL STATS ######
     @property
@@ -64,7 +71,7 @@ class Explorer:
         if specific_user:                                                                   # Filtering all trades where the specified User is either Input or Output
             trades = trades.loc[(trades['INPUT'] == specific_user) | (trades['OUTPUT'] == specific_user)]
 
-        print(trades)
+        if trades.empty: return 0                                                           # checking if there have been any trades in the given timeframe
 
         return len(trades.index)                                                            # returns the number of rows in the (filtered?) dataframe
 
@@ -77,9 +84,13 @@ class Explorer:
         '''
         rows = self.blockchain if days < 1 else self.tx_by_time(days)                       # checks entire blockchain, or last few days if "days" value is specified
         mined = rows.loc[rows['INPUT'] == CREATOR]                                          # Gets all trades where the Currency Thing Bot is the one sending things
+
+        # checking if any things have been mined in the given timeframe
+        if mined.empty: return 0
+
         mined = mined['SIZE'].sum()                                                         # Sums the size of currency things sent
 
-        return int(mined)
+        return int(mined)                                                                   # converting numpy.int64 to regular int
 
 
     def biggest_trade(self, days = 0, user_sent:str = None, user_received:str = None) -> int:
@@ -99,6 +110,9 @@ class Explorer:
             
         elif user_received:                                                                 # Filters rows where Currency Thing was NOT the INPUT, and the user was the OUTPUT
             rows = rows[(rows['INPUT'] != CREATOR) & (rows['OUTPUT'] == user_received)]
+        
+        # checking if there have been any trades in the given timeframe
+        if rows.empty: return 0
 
         # Getting the value now
         rows.sort_values('SIZE', ascending=False, inplace=True)                             # Sorts rows by trade size in descending order
@@ -120,20 +134,47 @@ class Explorer:
         return filtered_tx
 
 
+    ### CUMULATIVE STATS ######
     # Cumulative sum of currency things at each transastion
-    def supply_over_tx(self, blockchain: pd.DataFrame) -> pd.DataFrame:
+    def supply_over_tx(self) -> pd.DataFrame:
         '''
         Returns a DataFrame with the total amount of currency things in circulation at each transaction ID.\n
         [ ID | SUPPLY ]
         '''
         print('[EXPLORER] >>> SUPPLY OVER TX')
-        mints = blockchain.loc[blockchain['INPUT'] == CREATOR]                              # All currency things sent by the Currency Thing bot (mined)
-        mints.drop(['ID', 'INPUT', 'OUTPUT', 'PREV_HASH', 'TIME'], axis=1, inplace=True)    # Removes unnecessary columns
+        mined = self.mined.drop(['ID', 'INPUT', 'OUTPUT', 'PREV_HASH', 'TIME'], axis=1)     # Gets mining rewards and removes unnecessary column
+        supply = mined.cumsum().rename(columns={'SIZE': 'SUPPLY'})                          # cumulative sums the mining rewards, and renames the col to Supply
 
-        supply = mints.cumsum().rename(columns={'SIZE': 'SUPPLY'})                          # cumulative sums the mining rewards, and renames the col to Supply
+        return supply
+    
+    # Cumulative sum of currency things at per day
+    def supply_over_time(self) -> pd.DataFrame:
+        '''
+        Returns the total amount of currency things in circulation per day.
+        [ ID | SUPPLY ]
+        '''
+        mined = self.mined.drop(['ID', 'INPUT', 'OUTPUT', 'PREV_HASH'], axis=1)             # Gets mining rewards and removes unnecessary column         
+        mined['TIME'] = mined['TIME'].dt.date                                               # Converts the datetime to date
+        supply = mined.groupby('TIME').sum()                                                # Sums all currency things mined per day
+        supply = supply.cumsum(axis=0).rename(columns={'SIZE': 'SUPPLY'})                   # Gets the cumulative sum by date
+
         return supply
     
     
+    ### DAILY STATS ######
+    # Currency Things mined on each day
+    def mined_per_day(self) -> pd.DataFrame:
+        '''
+        Returns a DataFrame with the amount of currency things made every day
+        [ TIME | SIZE ]
+        '''
+        mined = self.mined
+        mined['TIME'] = mined['TIME'].dt.date                                               # Converts the datetime to date
+        mined = mined.groupby('TIME').sum().drop(['ID'], axis=1)                            # Groups by date and sums all size values at each day, and removes the ID column
+
+        return mined
+
+
     ### USER STATS ######
     # Gets the amount of currency things held by a user
     def get_balance(self, user: str) -> int:
@@ -219,7 +260,7 @@ class Explorer:
         latest = (self.supply // 1000) * 1000
         milestones = [1] + list(range(1000, latest + 1000, 1000)) # generating a list of all the thousands, but starting at 1
 
-        supply_over_tx = self.supply_over_tx(self.blockchain)
+        supply_over_tx = self.supply_over_tx()
 
         # A list of tuples containing the Milestone reached, and the Trade ID where it was reached, for each milestone specified above
         mile_txs = [self.who_mined_nth_thing(thing, supply_over_tx) for thing in milestones]
@@ -242,5 +283,7 @@ if __name__ == '__main__':
     # print(ex.tx_by_time(100))
     # print(ex.biggest_trade(-5))
     print(ex.mined_by_user('<@216972321099874305>'))
+    # print(ex.mined_per_day())
+    print(ex.mined)
     
     
