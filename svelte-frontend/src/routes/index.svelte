@@ -56,6 +56,14 @@
     <title>Currency Thing Blockchain Explorer</title>
     <meta name="description" content="this is the page description">
     <meta name="ass" content="yes">
+
+    <!-- preloading graph images -->
+    <link rel="preload" as="image" href='/graphs/supply.svg' />
+    <link rel="preload" as="image" href='/graphs/mined.svg' />
+    <link rel="preload" as="image" href='/graphs/trades.svg' />
+    <link rel="preload" as="image" href='/graphs/user_trades.svg' />
+    <link rel="preload" as="image" href='/graphs/biggest_trade.svg' />
+    <link rel="preload" as="image" href='/graphs/holders.svg' />
 </svelte:head>
 
 <!-- page content -->
