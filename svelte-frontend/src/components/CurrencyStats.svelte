@@ -78,10 +78,10 @@
 
 <!-- The actual stat cards -->
 <div class="currency-stats">
-    <StatCard label='currency things in the wild'           data={stats.supply}         colour='accent'             />
-    <StatCard label='currency things mined'                 data={stats.mined}          colour='blue'   {phrase}    />
-    <StatCard label='trades'                                data={stats.trades}         colour='purple' {phrase}    />
-    <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' {phrase}    />
-    <StatCard label='currently holding'                     data={stats.users}          colour='green'              />
-    <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink'   {phrase}    />    
+    <StatCard label='currency things in the wild'           data={stats.supply}         colour='accent'             graph={'supply'}/>
+    <StatCard label='currency things mined'                 data={stats.mined}          colour='blue'   {phrase}    graph={'mined'}/>
+    <StatCard label='trades'                                data={stats.trades}         colour='purple' {phrase}    graph={'trades'}/>
+    <StatCard label='user trades'                           data={stats.user_trades}    colour='yellow' {phrase}    graph={'user_trades'}/>
+    <StatCard label='currently holding'                     data={stats.users}          colour='green'              graph={'holders'}/>
+    <StatCard label='currency things was the biggest trade' data={stats.biggest_trade}  colour='pink'   {phrase}    graph={'biggest_trade'}/>    
 </div>

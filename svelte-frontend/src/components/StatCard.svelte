@@ -15,6 +15,7 @@
     export let label = 'title'      // text to display after the data
     export let colour = 'accent'    // background colour of the card
     export let phrase = ''          // phrase to display at the end, if any (ex: in the last 24h, this week, total)
+    export let graph = ''           // the name of the graph SVG file to display
 
 
     // Use to show/hide the full graphs. Hidden by default.
@@ -40,7 +41,7 @@
     <!-- This version keeps at panel on, but slides AND scales in the Graph -->
     <div class="graph-container">
         {#if toggled}
-            <img src="https://currencything.com/static/graphs/supply.svg" alt="line_chart.svg" class="graph"  transition:slide='{{duration: 600}}'>
+            <img src={`/graphs/${graph}.svg`} alt={`/graphs/${graph}.svg`} class="graph"  transition:slide='{{duration: 600}}'>
         {/if}
     </div>
 </div>
