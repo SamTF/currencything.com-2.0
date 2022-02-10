@@ -159,7 +159,7 @@ class Explorer:
         supply = supply.cumsum(axis=0).rename(columns={'SIZE': 'SUPPLY'})                   # Gets the cumulative sum by date
 
         return supply
-    
+
     
     ### DAILY STATS ######
     # Currency Things mined on each day
@@ -173,6 +173,54 @@ class Explorer:
         mined = mined.groupby('TIME').sum().drop(['ID'], axis=1)                            # Groups by date and sums all size values at each day, and removes the ID column
 
         return mined
+    
+    # Number of trades per day
+    def num_of_trades_per_day(self, users_only = False, specific_user: str = None) -> pd.DataFrame:
+        '''
+        Returns the quantity of transactions PER DAY on the blockchain as a DataFrame.\n
+        [ TIME | SIZE ]
+
+        users_only: only displays trades executed by users and not by the Currency Thing bot
+        specific_user: only count trades involving the mentioned user (by discord @mention)
+        '''
+        trades = self.blockchain
+
+        if users_only:
+            trades = trades.loc[trades['INPUT'] != CREATOR]                                 # Only count rows where the Currency Thing Bot was not involved
+        
+        if specific_user:                                                                   # Filtering all trades where the specified User is either Input or Output
+            trades = trades.loc[(trades['INPUT'] == specific_user) | (trades['OUTPUT'] == specific_user)]
+
+        trades['TIME'] = trades['TIME'].dt.date
+        trades = trades.groupby('TIME').count()
+        trades.drop(['ID', 'INPUT', 'OUTPUT', 'PREV_HASH'], axis=1, inplace=True)
+
+        return trades
+
+
+    # Biggest Trades
+    def biggest_trade_over_time(self):
+        '''
+        Tracks the biggest trade size at every moment in the blockchain.
+        Returns a pandas dataframe [ ID | SIZE ]
+        '''
+        big_trades = []
+        biggest_trade = 0
+
+        for index, row in self.blockchain.iterrows():
+            size = row['SIZE']
+
+            # checking if the current trade is bigger than the current biggest
+            if size > biggest_trade:
+                data = (row['ID'], size)
+                biggest_trade = size
+                big_trades.append(data)
+        
+        # Returns a dataframe of the biggest trades
+        big_trades_df = pd.DataFrame(big_trades, columns=['ID', 'SIZE'])
+        big_trades_df.set_index('ID', inplace=True)
+
+        return big_trades_df
 
 
     ### USER STATS ######
@@ -232,7 +280,22 @@ class Explorer:
         things_received = filtered['SIZE'].sum()
         
         return int(things_received)
-
+    
+    # Getting the balance of all Currency Thing users
+    def get_balance_all(self):
+        '''
+        Returns the balance of every currency thing user.\n
+        [ USER | SIZE ]
+        '''
+        balances = {}
+        users = self.blockchain.groupby(['OUTPUT']).sum().index.to_list()               # getting a list of all the users that own currency things as discord @mentions
+        
+        for user in users:
+            b = self.get_balance(user)
+            balances[user] = b
+        
+        user_balance_df = pd.DataFrame.from_dict(balances, orient='index', columns=['SIZE']).rename_axis(index='USER')
+        return user_balance_df
 
  
 
@@ -284,6 +347,10 @@ if __name__ == '__main__':
     # print(ex.biggest_trade(-5))
     print(ex.mined_by_user('<@216972321099874305>'))
     # print(ex.mined_per_day())
-    print(ex.mined)
+    # print(ex.mined)
+    # print(ex.biggest_trade_over_time())
+    print(ex.get_balance_all())
+else:
+    print('[EXPLORER.PY IMPORTED]')
     
     
