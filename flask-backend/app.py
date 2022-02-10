@@ -1,13 +1,10 @@
-from flask import Flask, jsonify, request                 # The Main thing
-import pandas                           # Dataframe reading and manipulation
-import json
-from datetime import datetime
-import re
+from flask import Flask, jsonify, request                   # The Main thing
+import pandas                                               # Dataframe reading and manipulation
+import re                                                   # REGEX for emote codes
 
-from sympy import per
-
-import users                            # list of all currency things and their relevant properties
-from explorer import Explorer           # explores data on the blockchain
+import users                                                # list of all currency things and their relevant properties
+from explorer import Explorer                               # explores data on the blockchain
+import graph_dealer as gd                                   # generating static graphs with matplotlib
 
 
 ######### INITIALISING APP #########
@@ -20,6 +17,8 @@ explorer = Explorer()
 @app.route('/blockchain')
 def blockchain():
     blockchain = get_blockchain()                   # reading and formatting the Blockchain as a DataFrame
+    # TEMP!!!!
+    graphs()
     return blockchain.to_json(orient='records')     # returns the Blockchain to the client as JSON
 
 
@@ -66,6 +65,27 @@ def stats_user(username: str):
     stats = get_user_stats(user)
 
     return stats
+
+
+# Getting Stat Graphs
+@app.route('/blockchain/stats/graphs')
+def graphs():
+    # Graphing the stats data with matplotlib
+    gd.plot_chart(explorer.supply_over_time(),              gd.GraphType.LINE,  'supply',           'Supply Over Time',         'Date',         '₡urrency Things',  True)
+    gd.plot_chart(explorer.mined_per_day(),                 gd.GraphType.LINE,  'mined',            'Things Mined Per Day',     'Date',         '₡urrency Things',  True)
+    gd.plot_chart(explorer.num_of_trades_per_day(),         gd.GraphType.LINE,  'trades',           'Trades Over Time',         'Date',         '# Of Trades',      True)
+    gd.plot_chart(explorer.num_of_trades_per_day(True),     gd.GraphType.LINE,  'user_trades',      'User Trades Over Time',    'Date',         '# Of Trades',      True)
+    gd.plot_chart(explorer.biggest_trade_over_time(),       gd.GraphType.BAR,   'biggest_trade',    'Biggest Trade Over Time',  'Trade ID',     '₡urrency Things',  False)
+    
+
+    holders = explorer.get_balance_all().rename(index=users.replace_thing('mention', 'name')) # changes the index values from discord mentions to usernames
+    gd.plot_chart(holders,               gd.GraphType.BAR,   'holders',          'Currency Thing Holders',   'User',         '₡urrency Things',  False)
+    
+    
+    print('[APP.PY] >>> Calling all graphs!')
+
+    return {'message' : 'all graphs successfully generated!'}
+
 
 # testing optional parameters ex: ?key=value
 @app.route('/test')
