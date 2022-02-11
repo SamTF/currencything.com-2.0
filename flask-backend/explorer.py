@@ -242,6 +242,23 @@ class Explorer:
         return int(balance)                                                             # Converting numpy int64 to int
     
 
+    # Getting the balance of all Currency Thing users
+    def get_balance_all(self) -> pd.DataFrame:
+        '''
+        Returns the balance of every currency thing user as a DataFrame.\n
+        [ USER | SIZE ]
+        '''
+        received = self.blockchain.groupby(['OUTPUT']).sum()                            # OUTPUT Dataframe - sums all currency things SENT TO each user
+        sent = self.blockchain.groupby(['INPUT']).sum()                                 # INPUT  Dataframe - sums all currency things SENT BY each user
+
+        balances = pd.DataFrame(index=received.index, columns=['SIZE'])                 # Creating an empty dataframe with a Size column using the Users from the received dataframe
+        balances['SIZE'] = received['SIZE'].sub(sent['SIZE'], fill_value=0)             # Subtracts the Sent col from the Received Col, treating null values as 0
+        balances = balances.astype(int)                                                 # Converts SIZE from float to int
+        balances.index.names = ['USER']                                                 # Sets the Index title as USER
+
+        return balances
+    
+
     def mined_by_user(self, user: str) -> int:
         '''
         Returns how many currency things a user has mined in total.
@@ -281,21 +298,37 @@ class Explorer:
         
         return int(things_received)
     
-    # Getting the balance of all Currency Thing users
-    def get_balance_all(self):
+
+    ### CUMULATIVE USER STATS ######
+    def balance_over_time(self, user: str, date_index = False) -> pd.DataFrame:
         '''
-        Returns the balance of every currency thing user.\n
-        [ USER | SIZE ]
+        The cumulative amount of currency things held by the user over time.\n
+        Returns a dataframe [ ID | SIZE | TIME ]
+
+        user : discord @mention : <@123456789>
         '''
-        balances = {}
-        users = self.blockchain.groupby(['OUTPUT']).sum().index.to_list()               # getting a list of all the users that own currency things as discord @mentions
-        
-        for user in users:
-            b = self.get_balance(user)
-            balances[user] = b
-        
-        user_balance_df = pd.DataFrame.from_dict(balances, orient='index', columns=['SIZE']).rename_axis(index='USER')
-        return user_balance_df
+        b = self.blockchain
+        received = b.loc[b['OUTPUT'] == user]                       # All currency things received by this user
+        sent = b.loc[b['INPUT'] == user]                           # All currency things sent by this user
+
+        sent['SIZE'] = sent['SIZE'] * - 1                                               # Turns sent things into negtaive transactions
+
+        networth = pd.concat([received, sent])                                          # Combines both dataframes
+
+        if date_index:
+            networth.set_index('TIME', drop=True, inplace=True)                         # Sets the Datetime column as Index
+            networth.drop(['ID'], axis=1, inplace=True)                                 # Removes the TX ID column
+        else:
+            networth.set_index('ID', drop=True, inplace=True)                           # Sets the ID column as Index
+            networth.drop(['TIME'], axis=1, inplace=True)                               # Removes the datetime column
+
+        networth.drop(['INPUT', 'OUTPUT', 'PREV_HASH'], axis=1, inplace=True)           # Removes all other unnecessary columns
+        # networth = networth.sort_index(axis=0)                                          # Sorts the values chronologically by ID
+
+        networth = networth.cumsum()                                                    # Finally, the cumulative amount of currency things held at each point
+
+        return networth
+
 
  
 
@@ -349,6 +382,9 @@ if __name__ == '__main__':
     # print(ex.mined_per_day())
     # print(ex.mined)
     # print(ex.biggest_trade_over_time())
+    # print(ex.get_balance_all())
+    print(ex.balance_over_time('<@216972321099874305>', True))
+    print(ex.get_balance('<@216972321099874305>'))
     print(ex.get_balance_all())
 else:
     print('[EXPLORER.PY IMPORTED]')
