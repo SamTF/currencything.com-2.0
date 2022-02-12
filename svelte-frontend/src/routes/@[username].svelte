@@ -19,7 +19,12 @@
         let res3 = await fetch('http://localhost:3000/api/blockchain/stats/@' + user)
         let stats = await res3.json()
 
-        return {props: {user, trades, milestones, stats}}
+        // fetching the user's graphs
+        // let res4 = await fetch('http://localhost:3000/api/blockchain/graphs/@' + user)
+        // let graph = await res4.json()
+        let graph = {}
+
+        return {props: {user, trades, milestones, stats, graph}}
     }
 </script>
 
@@ -29,10 +34,21 @@
     export let trades       // the blockchain filtered to show only their transactions
     export let milestones   // all currency thing milestones
     export let stats        // the user's fun fact statistics
+    export let graph        // SVG graph
 
     import Blockchain from "../components/Blockchain.svelte"
+    import StatCard from '../components/StatCard.svelte'
 
     console.log(stats)
+
+    // Fetching graphs after loading the page because it takes ~200ms
+    async function fetchGraphs() {
+        let res = await fetch('http://localhost:3000/api/blockchain/graphs/@' + user)
+        let graphs = await res.json()
+        return graphs
+    }
+
+    let promise = fetchGraphs()
 </script>
 
 
@@ -72,5 +88,17 @@
 
 <br>
 <p style="text-align: center;">Welcome to {user}'s currency thing page!</p>
+
+<!-- Stat Cards with Graphs -->
+<div class="currency-stats">
+    <!-- Using Await block to allow for fetching this data AFTER the page has been rendered -->
+    {#await promise}
+        <StatCard label='networth'  graph={`${user} networth`}    colour='blue' />
+        <StatCard label='trades'    graph={`${user} trades`}    colour='purple' />
+    {:then graphs} 
+        <StatCard label='networth'  svg_data={graphs.networth}    colour='blue' />
+        <StatCard label='trades'    svg_data={graphs.trades}    colour='purple' />
+    {/await}
+</div>
 
 <Blockchain table_data={trades.reverse()} milestones={milestones}/>
