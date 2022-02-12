@@ -2,14 +2,22 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from enum import Enum
-
+from io import StringIO
 
 ### CONSTANTS
-GRAPH_DIR = '../svelte-frontend/static/graphs/{}.svg'
+GRAPH_DIR = '../svelte-frontend/static/graphs/'
 
 class GraphType(Enum):
-    LINE = 1,
+    LINE = 1
     BAR = 2
+
+class FileFormat(Enum):
+    SVG = 'svg'
+    PNG = 'png'
+
+class Method(Enum):
+    STRING_BUFFER = 0
+    SAVE_TO_DISK = 1
 
 
 ###### HELPER FUNCTIONS ##############################################################################################################
@@ -25,7 +33,17 @@ def format_dates(array):
 
 
 ###### ACTUAL GRAPHING ##############################################################################################################
-def plot_chart(data: pd.DataFrame, graph_type: GraphType, file_name: str, title: str, xlabel: str = '# Of Trades', ylabel: str = '₡urrency Things', date_index:bool = False) -> str:
+def plot_chart(
+        data: pd.DataFrame,
+        graph_type: GraphType,
+        file_name: str,
+        title: str,
+        xlabel: str = '# Of Trades',
+        ylabel: str = '₡urrency Things',
+        date_index:bool = False,
+        return_method = Method.SAVE_TO_DISK,
+        file_format = FileFormat.SVG
+    ) -> str:
     '''
     Generic plotting function for a line or bar chart. Plots a DataFrame with the index as the X values and the SIZE column as the Y values.
     Save the graph as an SVG and returns the its file name.
@@ -36,7 +54,9 @@ def plot_chart(data: pd.DataFrame, graph_type: GraphType, file_name: str, title:
     title: The title of the graph.
     xlabel: Label for the X-axis.
     ylabel: Label for the Y-axis.
-    date_index: Whether the x-axis values are dates. 
+    date_index: Whether the x-axis values are dates.
+    return_method: Whether the graph should be saved to disk or returned as a string buffer
+    file_format: Save image as SVG or PNG
     '''
     # setting the graph size
     plt.figure(figsize=(8,6), dpi=150)
@@ -71,6 +91,8 @@ def plot_chart(data: pd.DataFrame, graph_type: GraphType, file_name: str, title:
     ax.set_facecolor('black')                    # background colour
     ax.spines['bottom'].set_color('white')       # x-axis border colour
     ax.spines['left'].set_color('white')         # y-axis border colour
+    ax.spines['right'].set_color((1, 1, 0, 0.0)) # transparent right border
+    ax.spines['top'].set_color((1, 1, 0, 0.0))   # transparent top border
     ax.tick_params(colors="white", labelsize=10) # colour and size of the tick markers
 
     # Amount of ticks
@@ -81,16 +103,33 @@ def plot_chart(data: pd.DataFrame, graph_type: GraphType, file_name: str, title:
     if graph_type == GraphType.BAR:
         plt.grid(axis='y', color = 'gray', linestyle = '--', linewidth = 0.5, zorder=0)
 
+    return_string = ''
+
     # Saving the graph as an SVG
-    plt.savefig(GRAPH_DIR.format(file_name), transparent=True)
+    if return_method == Method.SAVE_TO_DISK:
+        full_path = f'{GRAPH_DIR}{file_name}.{file_format.value}'
+        plt.savefig(full_path, transparent=True)
+        return_string = file_name   # returns the name of the file saved to disk
+    
+    # Not saving anything to disk, and return the image data as a string
+    elif return_method == Method.STRING_BUFFER:
+        f = StringIO()
+        plt.savefig(f, format='svg', transparent=True)
+        svg = f.getvalue().split('</metadata>\n ')[1][:-8]                 # extracts only the SVG data without any metadata or the <svg> tags
+        return_string = svg.replace('\n', '')
+
 
     # Closing any open figures from memory
     plt.close('all')
 
-    return file_name
+    # Returning the appropriate value
+    return return_string    
 
 
 if __name__ == '__main__':
     print('executed when invoked directly')
 else:
     print('[GRAPH_DEALER.PY IMPORTED]')
+
+# http://hplgit.github.io/web4sciapps/doc/pub/._part0013_web4sa_plain.html
+# https://css-tricks.com/lodge/svg/09-svg-data-uris/
