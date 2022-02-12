@@ -16,6 +16,7 @@
     export let colour = 'accent'    // background colour of the card
     export let phrase = ''          // phrase to display at the end, if any (ex: in the last 24h, this week, total)
     export let graph = ''           // the name of the graph SVG file to display
+    export let svg_data
 
 
     // Use to show/hide the full graphs. Hidden by default.
@@ -46,8 +47,16 @@
     <!-- Expanded Graph -->
     <!-- This version keeps at panel on, but slides AND scales in the Graph -->
     <div class="graph-container">
-        {#if toggled}
+        <!-- Loading image from disk -->
+        {#if toggled && !svg_data}
             <img src={`/graphs/${graph}.svg`} alt={`/graphs/${graph}.svg`} class="graph"  transition:slide='{{duration: 600}}'>
+        
+        <!-- Rendering given inline SVG -->
+        {:else if toggled && svg_data}
+            <svg alt={`/graphs/${graph}.svg`} class="graph"  transition:slide='{{duration: 600}}'
+                xmlns:xlink="http://www.w3.org/1999/xlink" width="576pt" height="432pt" viewBox="0 0 576 432" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                {@html svg_data}
+            </svg>  
         {/if}
     </div>
 </div>
