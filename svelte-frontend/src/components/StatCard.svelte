@@ -36,7 +36,7 @@
     <!-- Statistics Info Box -->
     <div class={`stat-card bg-${colour}`}>
         <!-- Only display data if there is data to display -->
-        {#if data}
+        {#if data !== null}
             <h2>...<b>{data}</b> {label} {phrase}</h2>
         <!-- otherwise just display the label -->
         {:else}
