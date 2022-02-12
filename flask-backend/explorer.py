@@ -308,29 +308,26 @@ class Explorer:
         user : discord @mention : <@123456789>
         '''
         b = self.blockchain
-        received = b.loc[b['OUTPUT'] == user]                       # All currency things received by this user
-        sent = b.loc[b['INPUT'] == user]                           # All currency things sent by this user
+        b['TIME'] = b['TIME'].dt.date                                                   # Converts TIME column from datetime to just date
+        received = b.loc[b['OUTPUT'] == user]                                           # All currency things received by this user
+        sent = b.loc[b['INPUT'] == user]                                                # All currency things sent by this user
 
         sent['SIZE'] = sent['SIZE'] * - 1                                               # Turns sent things into negtaive transactions
 
         networth = pd.concat([received, sent])                                          # Combines both dataframes
 
         if date_index:
-            networth.set_index('TIME', drop=True, inplace=True)                         # Sets the Datetime column as Index
+            networth = networth.groupby('TIME').sum()                                   # Groups all data from the same date, and sets TIME as Index
             networth.drop(['ID'], axis=1, inplace=True)                                 # Removes the TX ID column
         else:
             networth.set_index('ID', drop=True, inplace=True)                           # Sets the ID column as Index
             networth.drop(['TIME'], axis=1, inplace=True)                               # Removes the datetime column
-
-        networth.drop(['INPUT', 'OUTPUT', 'PREV_HASH'], axis=1, inplace=True)           # Removes all other unnecessary columns
-        # networth = networth.sort_index(axis=0)                                          # Sorts the values chronologically by ID
-
+            networth.drop(['INPUT', 'OUTPUT', 'PREV_HASH'], axis=1, inplace=True)       # Removes unnecessary columns
+            
         networth = networth.cumsum()                                                    # Finally, the cumulative amount of currency things held at each point
 
-        return networth
-
-
- 
+        return networth 
+        
 
     ### MILESTONES ######
     def who_mined_nth_thing(self, thing: int, cum_supply: pd.DataFrame) -> tuple[int, int]:
@@ -384,8 +381,8 @@ if __name__ == '__main__':
     # print(ex.biggest_trade_over_time())
     # print(ex.get_balance_all())
     print(ex.balance_over_time('<@216972321099874305>', True))
-    print(ex.get_balance('<@216972321099874305>'))
-    print(ex.get_balance_all())
+    # print(ex.get_balance('<@216972321099874305>'))
+    # print(ex.get_balance_all())
 else:
     print('[EXPLORER.PY IMPORTED]')
     
