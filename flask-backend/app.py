@@ -1,3 +1,4 @@
+from debugpy import trace_this_thread
 from flask import Flask, jsonify, request                   # The Main thing
 import pandas                                               # Dataframe reading and manipulation
 import re                                                   # REGEX for emote codes
@@ -71,6 +72,9 @@ def stats_user(username: str):
 @app.route('/blockchain/stats/graphs')
 def graphs():
     # Graphing the stats data with matplotlib
+    ### THIS MUST NOT BE DONE HERE
+    ### IT SLOWS DOWN THE PAGE BY A FULL SECOND!!!
+    ### put the graph generation for the main page on a cron job every 24h
     gd.plot_chart(explorer.supply_over_time(),              gd.GraphType.LINE,  'supply',           'Supply Over Time',         'Date',         '₡urrency Things',  True)
     gd.plot_chart(explorer.mined_per_day(),                 gd.GraphType.LINE,  'mined',            'Things Mined Per Day',     'Date',         '₡urrency Things',  True)
     gd.plot_chart(explorer.num_of_trades_per_day(),         gd.GraphType.LINE,  'trades',           'Trades Over Time',         'Date',         '# Of Trades',      True)
@@ -86,6 +90,24 @@ def graphs():
 
     return {'message' : 'all graphs successfully generated!'}
 
+
+# Getting User-specific graphs
+@app.route('/blockchain/stats/@<username>/graphs')
+def user_graphs(username):
+    # fetching the User object by name
+    user = users.get_user(username)
+
+    # getting the dataframes required for the graphs
+    user_trades = explorer.num_of_trades_per_day(True, specific_user=user.mention)
+    networth_over_time = explorer.balance_over_time(user.mention, True)
+
+    # fetching the graphs as a SVG string to embed in the HTML
+    trades_graph_svg    = gd.plot_chart(user_trades,        gd.GraphType.LINE,  f'{username}_trades',   'Trades Per Day',       'Day',  '# Of Trades',      True, gd.Method.STRING_BUFFER)
+    networth_graph      = gd.plot_chart(networth_over_time, gd.GraphType.LINE,  f'{username}_networth', 'Networth Over Time',   'Date', '₡urrency Things',  True, gd.Method.STRING_BUFFER)
+
+    # return supply
+    return {'trades' : trades_graph_svg, 'networth' : networth_graph}
+    
 
 # testing optional parameters ex: ?key=value
 @app.route('/test')
