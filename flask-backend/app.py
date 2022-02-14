@@ -32,6 +32,10 @@ def blockchain():
 def user(username: str):
     descending = request.args.get('descending', None)   # whether the trades should be in ascending or descending order
     user = users.get_user(username)                     # fetching the User object by name
+    
+    if not user:                                        # return a 400 BAD REQUEST error if no user was found
+        return f"User @{username} not found!", 400
+    
     trades = get_user_trades(username)                  # gets all of the user's trades by Username
 
     # sorting by newest trade first if there's a descending parameter with any value. why? -> https://stackoverflow.com/questions/65575796/why-does-the-flask-bool-query-parameter-always-evaluate-to-true
@@ -66,9 +70,11 @@ def stats():
 # User specific statistics
 @app.route('/blockchain/stats/@<username>')
 def stats_user(username: str):
-    user = users.get_user(username)                     # fetching the User object by name
-    stats = get_user_stats(user)
+    user = users.get_user(username)                     # fetching the User object by name, or returning error if not found
+    if not user:                                        # return a 400 BAD REQUEST error if no user was found
+        return f"User @{username} not found!", 400
 
+    stats = get_user_stats(user)
     return stats
 
 

@@ -13,6 +13,11 @@
 
         // fetching the User's Blockchain data as JSON before rendering the page
         let res = await fetch(`${DOMAIN}/api/blockchain/@${user}`)
+
+        // error handling if the user doesn't exist
+        if (!res.ok) {
+            throw new Error(`User ${user} not found :(`)
+        }
         let trades  = await res.json()
 
         // fetching the milestones
