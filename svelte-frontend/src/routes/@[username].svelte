@@ -62,7 +62,7 @@
 <section class="user-profile">
     <div class="user-profile-card shadow">
         <div class="avatar-container">
-            <img src="https://currencything.com/static/images/avatars/216972321099874305.png" alt="{user}'s avatar" class="avatar shadow">
+            <img src="/images/avatars/{user}.webp" alt="{user}'s avatar" class="avatar shadow">
         </div>
     
         <div class="user-info">
