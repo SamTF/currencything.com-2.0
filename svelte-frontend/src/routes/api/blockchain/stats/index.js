@@ -4,7 +4,9 @@
 export async function get({url, params}) {
     const period = url.searchParams.get('period')
 
-    const URL = `http://localhost:5000/blockchain/stats?period=${period}`
+    const BASE_URL = import.meta.env.VITE_API_URL
+    const URL = `${BASE_URL}/blockchain/stats?period=${period}`
+
     const res = await fetch(URL)
     const data = await res.json()
 

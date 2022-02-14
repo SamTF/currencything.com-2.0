@@ -2,8 +2,10 @@
 // PS: don't forget the name of the parasm is the [thing] in the file name :)
 
 export async function get({params}) {
-    const URL = 'http://localhost:5000/blockchain/@'
-    const res = await fetch(URL + params.username)
+    const BASE_URL = import.meta.env.VITE_API_URL
+    const URL = `${BASE_URL}/blockchain/@${params.username}`
+    
+    const res = await fetch(URL)
     const blockchain = await res.json()
 
     return {
