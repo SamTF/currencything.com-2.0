@@ -5,7 +5,7 @@
     // This query is run before the page is rendered
     export async function load({fetch}) {
         // fetching the Blockchain data as JSON before rendering the page
-        let res = await fetch('http://localhost:3000/api/blockchain')
+        let res = await fetch('http://localhost:3000/api/blockchain?descending=true')
         let blockchain  = await res.json()
 
         // fetching the milestones
@@ -36,18 +36,6 @@
     // Imports
     import Blockchain from '../components/Blockchain.svelte'
     import CurrencyStats from '../components/CurrencyStats.svelte'
-
-    async function fetchBlockchain() {
-        const url = 'http://localhost:3000/api/blockchain/'
-        const res = await fetch(url)
-        const data = await res.json()
-
-        console.log(data)
-    }
-
-    // fetchBlockchain()
-    // https://stackoverflow.com/questions/67568323/how-can-i-send-secure-api-requests-from-sveltekit-app-without-showing-api-keys
-    // https://svelte.dev/repl/fdd5034d023146f49614d3b087515df5?version=3.46.2
 </script>
 
 <!-- HTML -->
