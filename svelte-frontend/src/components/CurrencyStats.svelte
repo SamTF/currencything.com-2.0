@@ -47,6 +47,7 @@
         promise.then(value => {
             console.log(value)
             stats = value
+            updatePhrase()  // update the time period phrase simultaneously
         })
     }
 
@@ -58,11 +59,15 @@
         'ALL':  {period: 0,     selected: true,     phrase: 'total' },
     }
 
+    
+    let phrase = 'time period'
     // Gets the phrase property of the currently selected Period filter
-    $: phrase = Object.values(periodButtons)
-        .filter(x => x.selected)[0]
-        .phrase
-        
+    const updatePhrase = () => {
+        phrase = Object.values(periodButtons)
+            .filter(x => x.selected)[0]
+            .phrase
+    }
+    updatePhrase()
 </script>
 
 <!-- HTML -->
