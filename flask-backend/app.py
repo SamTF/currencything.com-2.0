@@ -17,10 +17,14 @@ explorer = Explorer()
 # Fetching the Blockchain as JSON
 @app.route('/blockchain')
 def blockchain():
-    blockchain = get_blockchain()                   # reading and formatting the Blockchain as a DataFrame
+    descending = request.args.get('descending', None)   # whether the trades should be in ascending or descending order
+    blockchain = get_blockchain()                       # reading and formatting the Blockchain as a DataFrame
+    if descending:                                      # sorting by newest trade first if there's a descending parameter with any value
+        blockchain.sort_index(axis=0, ascending=False, inplace=True)
+    
     # TEMP!!!!
-    graphs()
-    return blockchain.to_json(orient='records')     # returns the Blockchain to the client as JSON
+    # graphs()
+    return blockchain.to_json(orient='records')         # returns the Blockchain to the client as JSON
 
 
 # Fetching user trades as JSON
