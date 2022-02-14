@@ -5,18 +5,22 @@
 <script context='module'>
     // This query is run before the page is rendered
     export async function load({url, params}) {
+        // getting the username in the url: /@Username
         const user = params.username
 
+        // getting the website's current domain
+        const DOMAIN = import.meta.env.VITE_DOMAIN
+
         // fetching the User's Blockchain data as JSON before rendering the page
-        let res = await fetch('http://localhost:3000/api/blockchain/@' + user)
+        let res = await fetch(`${DOMAIN}/api/blockchain/@${user}`)
         let trades  = await res.json()
 
         // fetching the milestones
-        let res2 = await fetch('http://localhost:3000/api/blockchain/milestones')
+        let res2 = await fetch(`${DOMAIN}/api/blockchain/milestones`)
         let milestones = await res2.json()
 
         // fetching the user's stats
-        let res3 = await fetch('http://localhost:3000/api/blockchain/stats/@' + user)
+        let res3 = await fetch(`${DOMAIN}/api/blockchain/stats/@${user}`)
         let stats = await res3.json()
 
         return {props: {user, trades, milestones, stats}}
@@ -32,8 +36,7 @@
 
     import Blockchain from "../components/Blockchain.svelte"
     import StatCard from '../components/StatCard.svelte'
-
-    console.log(stats)
+    
 
     // Fetching graphs after loading the page because it takes ~200ms
     async function fetchGraphs() {
