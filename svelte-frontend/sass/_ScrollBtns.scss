@@ -10,5 +10,10 @@
     img {
         display: block;
         margin-bottom: 1rem;
+
+        // Smaller images on mobile to take up less screen space
+        @include mobile-layout() {
+            height: 48px;
+        }
     }
 }

@@ -55,6 +55,11 @@ $table-row-seperator: #ee333325;        // the colour of the line seperating eac
 
         // Bottom padding
         padding-bottom: 1rem;
+
+        // Smaller font on mobile
+        @include mobile-layout() {
+            font-size: 1.25vh;
+        }
     }
 
     // Table Rows
@@ -76,6 +81,21 @@ $table-row-seperator: #ee333325;        // the colour of the line seperating eac
         &:hover {
             background: change-color($color: $accent-colour, $alpha: 0.475);
             color: $heading-colour;
+        }
+
+        // Smaller font on mobile
+        @include mobile-layout() {
+            font-size: 1vh;
+        }
+    }
+
+    // Emote image
+    img {
+        height: 32px;
+
+        // Smaller emote on mobile
+        @include mobile-layout() {
+            height: 24px;
         }
     }
 }

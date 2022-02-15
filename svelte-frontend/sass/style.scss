@@ -2,11 +2,13 @@
 // It also imports the styles for specific components
 
 // IMPORTS
+// Mixins
+@import 'MIXINS';
 // Variables
 @import 'FONTS';
 @import 'CURSORS';
 @import 'COLOURS';
-// Mixins
+// Extendables
 @import 'Card';
 // Styles
 @import 'BlockchainTable';
@@ -47,6 +49,11 @@ body {
     display: grid;
     grid-template-columns: 20% 1fr 20%; // 20% margin | main content | 20% margin
     place-items: center;                // centering the content
+
+    // Remove margins on mobile
+    @include mobile-layout() {
+        grid-template-columns: 0% 1fr 0%; // | main content | 
+    }
 }
 
 
@@ -68,6 +75,11 @@ h1 {
 hr {
     border: 3px white solid;
     border-radius: 5px;
+
+    // More top/bottom margin on mobile
+    @include mobile-layout() {
+        margin: 50px 0px;
+    }
 }
 
 // Links

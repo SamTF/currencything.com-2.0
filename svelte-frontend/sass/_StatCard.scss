@@ -7,6 +7,12 @@
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(20vw, 1fr));
+
+    // Only one stat card per column on mobile
+    @include mobile-layout() {
+        grid-template-columns: 1fr;
+        margin: 0px 50px;
+    }
 }
 
 // Container for each individual Card
@@ -55,5 +61,10 @@
     .graph {
         transition: all 500ms;
         max-height: 35vh;
+
+        // Smaller graphs on mobile
+        @include mobile-layout() {
+            max-height: 25vh;
+        }
     }
 }

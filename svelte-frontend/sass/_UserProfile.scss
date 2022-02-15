@@ -25,6 +25,12 @@ $things-accent: #5cfaff;
 
     // Colour & Design
     @extend %card;
+
+    // Mobile - Taking up almost full width and more space for avatar
+    @include mobile-layout() {
+        grid-template-columns: 30% 1fr;
+        width: 90vw;
+    }
 }
 
 // Cointainer for the profile picture
@@ -47,6 +53,11 @@ $things-accent: #5cfaff;
     // Resetting paragraph margins
     p {
         margin: 0;
+
+        // Mobile - smaller font size
+        @include mobile-layout() {
+            font-size: 1.5vh;
+        }
     }
 
 
@@ -66,6 +77,14 @@ $things-accent: #5cfaff;
             display: inline-block;
             text-align: right;
             color: $things-accent;
+
+            // Mobile - Break into next line, left-aligned, margin at the bottom
+            @include mobile-layout() {
+                display: block;
+                text-align: left;
+                margin-top: 0;
+                margin-bottom: 20px;
+            }
         }
     }
 
@@ -75,6 +94,14 @@ $things-accent: #5cfaff;
         display: grid;
         gap: 2rem;
         grid-template-columns: repeat(auto-fit, minmax(20vw, 1fr));
+
+        // Mobile - One stat per row, left-aligned, smaller gap
+        @include mobile-layout() {
+            grid-template-columns: 1fr;
+            place-items: start;
+            margin-left: 0;
+            gap: 0.5rem;
+        }
     }
 
 }

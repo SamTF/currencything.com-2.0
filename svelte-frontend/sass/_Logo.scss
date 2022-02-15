@@ -38,4 +38,9 @@
         // Instant transition
         transition: all 0ms
     }
+
+    // Hide on mobile to take up less screen space
+    @include mobile-layout() {
+        visibility: hidden;
+    }
 }

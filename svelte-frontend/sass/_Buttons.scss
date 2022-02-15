@@ -37,6 +37,11 @@
     &:hover {
         transform: scale(1.3);
     }
+
+    // More margin on mobile
+    @include mobile-layout() {
+        margin-bottom: 25px;
+    }
 }
 
 .selected {

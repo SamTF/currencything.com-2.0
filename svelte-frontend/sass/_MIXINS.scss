@@ -1,0 +1,11 @@
+// Anything inside this mixin will be rendered if the device screen is less than the breakpoint
+// Basically mobile media query
+
+$breakpoint: 940px;     // screen width at which the mobile layout is triggered
+
+@mixin mobile-layout() {
+    @media (max-width: $breakpoint) {
+        @content;
+    }
+}
+    
