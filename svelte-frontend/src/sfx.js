@@ -1,6 +1,6 @@
 // This script contains all the Sound FX used in the website
 
-const sfxDir = '/static/sfx/'
+const sfxDir = 'sfx/'
 
 let SFX = {
     scroll_down: 'filesspill1.mp3',
