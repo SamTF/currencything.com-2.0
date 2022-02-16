@@ -33,20 +33,19 @@
     export let milestones
     export let stats
 
-    // const newData = blockchain.map(row => ({...row, EMOTE: `/images/emotes/{${row.EMOTE}}.webp`}))
-    // console.log(newData)
-
     // Imports
     import Blockchain from '../components/Blockchain.svelte'
     import CurrencyStats from '../components/CurrencyStats.svelte'
+    import Meta from '../components/Meta.svelte'
 </script>
 
 <!-- HTML -->
 <!-- metadata -->
 <svelte:head>
     <title>Currency Thing Blockchain Explorer</title>
-    <meta name="description" content="this is the page description">
-    <meta name="ass" content="yes">
+
+    <!-- Meta -->
+    <Meta />
 
     <!-- preloading graph images -->
     <link rel="preload" as="image" href='/graphs/supply.svg' />

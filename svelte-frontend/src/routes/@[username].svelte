@@ -39,8 +39,10 @@
     export let milestones   // all currency thing milestones
     export let stats        // the user's fun fact statistics
 
-    import Blockchain from "../components/Blockchain.svelte"
+    // IMPORTS
+    import Blockchain from '../components/Blockchain.svelte'
     import StatCard from '../components/StatCard.svelte'
+    import Meta from '../components/Meta.svelte'
     
 
     // Fetching graphs after loading the page because it takes ~200ms
@@ -58,7 +60,9 @@
 <!-- METADATA -->
 <svelte:head>
     <title>{user}'s page</title>
-    <meta name="description" content="this is the user profile of {user}">
+
+    <!-- Meta -->
+    <Meta title="{user}'s Currency Things" description="{user} has {user.balance} currency things! 💰" />
 </svelte:head>
 
 <!-- HTML -->
