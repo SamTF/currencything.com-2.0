@@ -12,7 +12,10 @@
 
     // Fetching Currency Thing Stats for the given time period
     async function fetchStats(period=0) {
-        const URL = `http://localhost:3000/api/blockchain/stats?period=${period}`
+        // getting the website's current domain
+        const DOMAIN = import.meta.env.VITE_DOMAIN
+        const URL = `${DOMAIN}/api/blockchain/stats?period=${period}`
+
         const res = await fetch(URL)
         const stats = await res.json()
 
