@@ -68,5 +68,3 @@
 {blockchain[0].INPUT}
 
 <img src='/images/emotes/Sam.webp' alt="AAAAAAA">
-
-<!-- CSS -->

@@ -63,7 +63,7 @@
     <title>{user}'s page</title>
 
     <!-- Meta -->
-    <Meta title="{user}'s Currency Things" description="{user} has {user.balance} currency things! 💰" />
+    <Meta title="{user}'s Currency Things" description="{user} has {stats.balance} currency things! 💰" thumbnail="{DOMAIN}/images/avatars/{user}.webp" />
 </svelte:head>
 
 <!-- HTML -->
