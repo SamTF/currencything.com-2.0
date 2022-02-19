@@ -46,8 +46,9 @@
     
 
     // Fetching graphs after loading the page because it takes ~200ms
+    const DOMAIN = import.meta.env.VITE_DOMAIN
     async function fetchGraphs() {
-        let res = await fetch('http://localhost:3000/api/blockchain/graphs/@' + user)
+        let res = await fetch(`${DOMAIN}/api/blockchain/graphs/@${user}`)
         let graphs = await res.json()
         return graphs
     }
