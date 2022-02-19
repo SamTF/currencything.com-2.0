@@ -70,7 +70,7 @@
     <!-- <td full-date={row.DATE.slice(0, -4)}> -->
     <td full-date={dateFormat(row.DATE)}>
         <!-- {formatDate(row.DATE)} -->
-        {dateFormat(row.DATE, 'shortDate')}
+        {dateFormat(row.DATE, 'd/m/yy')}
     </td>
 </tr>
 
