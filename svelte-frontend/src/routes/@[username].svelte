@@ -61,10 +61,9 @@
 <!-- METADATA -->
 <svelte:head>
     <title>{user}'s page</title>
-
-    <!-- Meta -->
-    <Meta title="{user}'s Currency Things" description="{user} has {stats.balance} currency things! 💰" thumbnail="{DOMAIN}/images/avatars/{user}.webp" />
 </svelte:head>
+<!-- OpenGraph/Twitter Embed -->
+<Meta title="{user}'s Currency Things" description="{user} has {stats.balance} currency things! 💰" thumbnail="{DOMAIN}/images/avatars/{user}.webp" />
 
 <!-- HTML -->
 <h1>{user}'s currency things</h1>

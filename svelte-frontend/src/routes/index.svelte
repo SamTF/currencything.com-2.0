@@ -44,9 +44,6 @@
 <svelte:head>
     <title>Currency Thing Blockchain Explorer</title>
 
-    <!-- Meta -->
-    <Meta />
-
     <!-- preloading graph images -->
     <link rel="preload" as="image" href='/graphs/supply.svg' />
     <link rel="preload" as="image" href='/graphs/mined.svg' />
@@ -55,6 +52,8 @@
     <link rel="preload" as="image" href='/graphs/biggest_trade.svg' />
     <link rel="preload" as="image" href='/graphs/holders.svg' />
 </svelte:head>
+<!-- OpenGraph/Twitter Embed -->
+<Meta />
 
 <!-- page content -->
 <h1>currency thing blockchain explorer</h1>
